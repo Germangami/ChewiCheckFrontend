@@ -11,7 +11,15 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  updateClient(client: Client): Observable<Client> {
+    return this.http.put<Client>(`${this.chewiCheckBackEndLocal}/update`, client);
+  }
+
   getClients(): Observable<Client[]> {
     return this.http.get<Client[]>(`${this.chewiCheckBackEndLocal}/getClients`);
+  }
+
+  getCurrentClient(tgId: string): Observable<Client> {
+    return this.http.get<Client>(`${this.chewiCheckBackEndLocal}/getCurrentClient/${tgId}`);
   }
 }

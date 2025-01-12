@@ -1,0 +1,55 @@
+<form [formGroup]="formGroup">
+
+  <div class="form-field-container">
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Nickname</mat-label>
+        <input matInput placeholder="Provide nickname"
+          formControlName="nickname"
+          [readonly]="!isClientDataEdit">
+        <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
+        <mat-hint>Hint</mat-hint>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput placeholder="Provide first name"
+          formControlName="first_name"
+          [readonly]="!isClientDataEdit">
+        <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
+        <mat-hint>Hint</mat-hint>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput placeholder="Provide last name"
+          formControlName="last_name"
+          [readonly]="!isClientDataEdit">
+        <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
+        <mat-hint>Hint</mat-hint>
+      </mat-form-field>
+    </p>
+    
+
+  </div>
+
+  <div class="button-container">
+      <button mat-fab extended (click)="editClientData()">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+
+      <button mat-fab extended (click)="saveClientData()"
+        [disabled]="!isClientDataEdit">
+        <mat-icon>done_all</mat-icon>
+        Save
+      </button>
+  </div>
+
+  
+
+</form>

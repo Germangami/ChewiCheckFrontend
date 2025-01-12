@@ -1,1 +1,5 @@
-<p>client-page works!</p>
+<h1>CLIENT PAGE</h1>
+
+@if(currentClient) {
+    <app-current-client-view [getCurrentClient]="currentClient"/>
+}

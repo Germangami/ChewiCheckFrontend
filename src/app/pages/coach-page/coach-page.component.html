@@ -1,5 +1,18 @@
 <p>coach-page works!</p>
 
-@for (client of clients; track $index) {
-    <p>{{client.first_name}} {{client.tgId}}</p>
+@if ((clients$ | async); as clients) {
+
+    <mat-accordion>
+        @for (client of clients; track $index) {
+            
+            <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title> {{client?.first_name}} {{client?.nickname}}</mat-panel-title>
+            </mat-expansion-panel-header>
+                <app-client-info [getClient]="client"/>
+            </mat-expansion-panel>
+        }
+
+    </mat-accordion>
+    
 }
