@@ -36,7 +36,8 @@ export class CurrentClientViewComponent {
       first_name: [currentCLient.first_name ? currentCLient.first_name : null],
       last_name: [currentCLient.last_name ? currentCLient.last_name : null],
       username: [currentCLient.username ? currentCLient.username : null],
-      nickname: [currentCLient.nickname ? currentCLient.nickname : null]
+      nickname: [currentCLient.nickname ? currentCLient.nickname : null],
+      note: [currentCLient.note ? currentCLient.note : null]
     });
   }
 

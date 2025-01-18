@@ -1,5 +1,10 @@
-<h1>CLIENT PAGE</h1>
-
-@if(currentClient) {
-    <app-current-client-view [getCurrentClient]="currentClient"/>
+@if (currentClient) {
+    <div class="mb-2">
+        <app-current-client-view [getCurrentClient]="currentClient"/>
+    </div>
+    <div class="mb-2">
+        <app-current-client-tranings [getCurrentClient]="currentClient"/>
+    </div>
+} @else {
+    <h1>Client not found</h1>
 }

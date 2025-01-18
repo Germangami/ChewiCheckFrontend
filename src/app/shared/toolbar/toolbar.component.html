@@ -1,0 +1,23 @@
+<mat-toolbar>
+  <div class="tolbar">
+    @if (currentClient.role === 'Coach') {
+      <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+      [routerLink]="['/coach']">
+        <mat-icon>people</mat-icon>
+      </button>
+    } @else if (currentClient.role === 'Client') {
+      <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+      [routerLink]="['/client', currentClientTgId]">
+        <mat-icon>person</mat-icon>
+      </button>
+    } @else {
+      <mat-icon>https</mat-icon>
+    }
+
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    [routerLink]="['']">
+      <mat-icon>home</mat-icon>
+    </button>
+
+  </div>
+</mat-toolbar>

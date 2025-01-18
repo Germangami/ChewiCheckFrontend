@@ -2,8 +2,9 @@ import { Injectable } from "@angular/core";
 import {State, Action, StateContext} from "@ngxs/store";
 import { tap } from "rxjs";
 import { Client } from "../../shared/Model/ClientModel/client-model";
-import { ChangeClientData, GetAllClients } from "./client.actions";
+import { ChangeClientData, GetAllClients, MarkClientTrainingAsCompleted, SelectClientAboniment } from "./client.actions";
 import { ApiService } from "../../shared/services/api.service";
+import { WebSocketService } from "../../shared/services/web-socket.service";
 
 export interface ClientModel {
     client: Client[];
@@ -23,7 +24,7 @@ export interface AttendanceHistory {
 @Injectable()
 export class ClientState {
 
-    constructor(private apiService: ApiService) {
+    constructor(private apiService: ApiService, private webSocketService: WebSocketService) {
 
     }
 
@@ -31,7 +32,6 @@ export class ClientState {
     getUsers(ctx: StateContext<ClientModel>) {
         return this.apiService.getClients().pipe(
             tap(response => {
-                console.log(response, 'RESP RESP')
                 const state = ctx.getState();
                 ctx.setState({
                     ...state,
@@ -55,8 +55,51 @@ export class ClientState {
                     ...state,
                     client: updatedClientList
                 });
-
+                this.webSocketService.emit('updateClient', updateClientData);
             })
         );
+    }
+
+    @Action(MarkClientTrainingAsCompleted)
+    markClientTrainingAsCompleted(ctx: StateContext<ClientModel>, action: MarkClientTrainingAsCompleted) {
+        const state = ctx.getState();
+
+        return this.apiService.updateClientTrainings(action._id).pipe(
+            tap((updateClientData: Client) => {
+                const updatedClientList = state.client.map(client => 
+                    client._id === updateClientData._id ? updateClientData : client
+                );
+
+
+                ctx.patchState({
+                    ...state,
+                    client: updatedClientList
+                });
+
+                this.webSocketService.emit('updateClient', updateClientData);
+            })
+        )
+    }
+
+
+
+    @Action(SelectClientAboniment)
+    selectClientAboniment(ctx: StateContext<ClientModel>, action: SelectClientAboniment) {
+        const state = ctx.getState();
+
+        return this.apiService.updateClientAboniment(action._id, action.aboniment).pipe(
+            tap((updateClientData: Client) => {
+                const updatedClientList = state.client.map(client =>
+                    client._id === updateClientData._id ? updateClientData : client
+                );
+
+                ctx.patchState({
+                    ...state,
+                    client: updatedClientList
+                });
+
+                this.webSocketService.emit('updateClient', updateClientData);
+            })
+        )
     }
 }

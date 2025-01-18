@@ -5,7 +5,13 @@ export interface Client {
     username?: string;
     nickname?: string,
     role?: Role,
-    _id: string 
+    note?: string,
+    totalTrainings?: number,
+    remainingTrainings?: number,
+    aboniment: number;
+    startDate?: string,
+    endDate?: string,
+    _id: string
 }
 
 export enum Role {

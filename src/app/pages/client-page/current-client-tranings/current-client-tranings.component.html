@@ -1,0 +1,27 @@
+<mat-card appearance="outlined">
+    <mat-card-content>
+
+        <div>
+            <div>
+                <span>{{currentCLient.startDate | date:'dd.MM.yyyy'}} - {{currentCLient.endDate | date:'dd.MM.yyyy'}}</span>
+              </div>
+              
+            <p>
+                totalTrainings: {{currentCLient.totalTrainings}}
+            </p>
+            <p>
+                remainingTrainings: {{currentCLient.remainingTrainings}}
+            </p>
+
+            <div class="button-container">          
+                <button mat-fab extended 
+                [disabled]="isTrainingDay || isChecked"
+                (click)="markTrainingAsCompleted()">
+                  <mat-icon>done_all</mat-icon>
+                  Check-in for Training
+                </button>
+            </div>
+        </div>
+
+    </mat-card-content>
+</mat-card>

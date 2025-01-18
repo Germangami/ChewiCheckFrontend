@@ -4,6 +4,17 @@
         <form [formGroup]="formGroup">
 
             <div class="form-field-container">
+                
+                <p>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Provide note</mat-label>
+                      <textarea matInput formControlName="note"
+                                [readonly]="true">
+                      </textarea>
+                      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+                    </mat-form-field>
+                </p>
+
                 <p>
                     <mat-form-field appearance="outline">
                         <mat-label>Nickname</mat-label>
@@ -11,7 +22,6 @@
                         formControlName="nickname"
                         [readonly]="true">
                         <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                        <mat-hint>Hint</mat-hint>
                     </mat-form-field>
                 </p>
         
@@ -22,7 +32,6 @@
                         formControlName="first_name"
                         [readonly]="true">
                         <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                        <mat-hint>Hint</mat-hint>
                     </mat-form-field>
                 </p>
         
@@ -33,7 +42,6 @@
                         formControlName="last_name"
                         [readonly]="true">
                         <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                        <mat-hint>Hint</mat-hint>
                     </mat-form-field>
                 </p>
                 

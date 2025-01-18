@@ -1,21 +1,25 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import { Store } from '@ngxs/store';
+import { ChangeClientData, SelectClientAboniment } from '../../../state/client/client.actions';
 import { Client } from '../../../shared/Model/ClientModel/client-model';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
-import {MatIconModule} from '@angular/material/icon';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatButtonModule} from '@angular/material/button';
-import { Store } from '@ngxs/store';
-import { ChangeClientData } from '../../../state/client/client.actions';
-import { Observable } from 'rxjs';
-import { ClientSelectors } from '../../../state/client/client.selectors';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-client-info',
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.scss',
+  providers: [provideNativeDateAdapter()],
   standalone: true,
   imports: [
     MatFormFieldModule, 
@@ -24,7 +28,10 @@ import { ClientSelectors } from '../../../state/client/client.selectors';
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    CommonModule
   ]
 })
 export class ClientInfoComponent implements OnInit {
@@ -33,11 +40,18 @@ export class ClientInfoComponent implements OnInit {
   set getClient(client: Client) {
     if (client) {
       this.initFormGroup(client);
+      this.client = client;
+      this.cdr.detectChanges();
     }
   }
 
   formGroup: FormGroup;
   isClientDataEdit = false;
+  client: Client;
+  aboniments: {label: string, value: number}[] = [
+    {label: 'basic - 200zł', value: 200},
+    {label: 'premium - 300zł', value: 300},
+  ];
 
   constructor(private fb: FormBuilder, private store: Store, private cdr: ChangeDetectorRef) {
     
@@ -52,11 +66,20 @@ export class ClientInfoComponent implements OnInit {
     this.formGroup = this.fb.group({
       _id: [client._id],
       tgId: [client.tgId ? client.tgId : null],
-      first_name: [client.first_name ? client.first_name : null],
-      last_name: [client.last_name ? client.last_name : null],
-      username: [client.username ? client.username : null ],
-      nickname: [client.nickname ? client.nickname : null]
+      note: [client.note ? client.note : null],
+      aboniment: [client.aboniment ? client.aboniment : null],
+      nickname: [client.nickname ? client.nickname : null],
+      startDate: [client.startDate ? client.startDate : null],
+      endDate: [client.endDate ? client.endDate : null],
+      totalTrainings: [client.totalTrainings ? client.totalTrainings : null],
+      remainingTrainings: [client.remainingTrainings ? client.remainingTrainings: null]
     });
+  }
+
+  selectAboniment(event: MatSelectChange) {
+    console.log(event.value, 'LOG LOG LOG', this.formGroup.get('_id').value, '_id');
+    this.store.dispatch(new SelectClientAboniment(event.value, this.formGroup.get('_id').value));
+    this.cdr.detectChanges();
   }
 
   editClientData() {

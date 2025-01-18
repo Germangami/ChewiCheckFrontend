@@ -6,6 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideStore } from '@ngxs/store';
 import { ClientState } from './state/client/client.state';
+import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
       [
         ClientState
       ],
-    )
+      withNgxsReduxDevtoolsPlugin(),
+    ),
   ]
 };
