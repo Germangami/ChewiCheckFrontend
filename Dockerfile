@@ -22,7 +22,7 @@ RUN ng build --configuration=production
 FROM nginx:latest
 
 # Копируем собранный проект из предыдущего этапа в папку nginx
-COPY --from=build /app/dist/chewi-check/browser /usr/share/nginx/html
+COPY --from=build /app/dist/chewi-check-frontend/browser /usr/share/nginx/html
 
 # Открываем порт 80 для nginx
 EXPOSE 4200

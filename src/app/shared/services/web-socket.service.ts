@@ -9,7 +9,7 @@ export class WebSocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('https://chewi-check.com'); // URLSERVER сервера
+    this.socket = io("wss://chewi-check.com/client"); // URLSERVER сервера
     // this.socket = io('http://localhost:5000'); // URLLOCAL сервера
   }
 
