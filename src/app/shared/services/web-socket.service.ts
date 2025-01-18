@@ -9,16 +9,18 @@ export class WebSocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io("wss://chewi-check.com/client"); // URLSERVER сервера
-    // this.socket = io('http://localhost:5000'); // URLLOCAL сервера
+    this.socket = io('https://chewi-check.com', {
+      transports: ['websocket', 'polling'], // Поддерживаемые транспорты
+      path: '/socket.io/', // Путь для WebSocket
+    });
   }
 
-  // Отправка данных
+  // Отправка данных на сервер
   emit(event: string, data: any): void {
     this.socket.emit(event, data);
   }
 
-  // Подписка на события
+  // Подписка на события от сервера
   on(event: string): Observable<any> {
     return new Observable((subscriber) => {
       this.socket.on(event, (data) => {
@@ -27,13 +29,13 @@ export class WebSocketService {
     });
   }
 
-  // Отключение
-  disconnect(): void {
-    this.socket.disconnect();
-  }
-
-  // Подписка на обновление клиента
+  // Подписка на обновления клиента
   onClientUpdated(): Observable<any> {
     return this.on('clientUpdated');
+  }
+
+  // Отключение WebSocket
+  disconnect(): void {
+    this.socket.disconnect();
   }
 }
