@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
     if (window.Telegram.WebApp) {
       console.log(window.Telegram.WebApp, 'CHECK TELEGRAM')
       this.tg = window.Telegram.WebApp;
-      this.tgId = window.Telegram.WebApp.initDataUnsafe.user.id;
+      this.tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id;
       window.Telegram.WebApp.ready();
     } else {
       return;

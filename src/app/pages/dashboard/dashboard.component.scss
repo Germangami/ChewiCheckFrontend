@@ -1,0 +1,20 @@
+.background-image {
+    background-image: url('https://chwalibogboxing.pl/wp-content/uploads/2024/05/1.png');
+    background-size: cover; /* Масштабирование изображения */
+    background-position: center; /* Центровка изображения */
+    height: 100%; /* Задай нужную высоту */
+    width: 100%; /* Полная ширина */
+    border-radius: 8px; /* Закругление углов */
+}
+
+.flex-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.test {
+    color: white !important;
+}

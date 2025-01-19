@@ -21,15 +21,17 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     if (window.Telegram.WebApp) {
-      console.log(window.Telegram.WebApp, 'CHECK TELEGRAM DASHBOARD!')
-      this.tgId = window.Telegram.WebApp.initDataUnsafe.user.id;
+      console.log(window.Telegram.WebApp.MainButton, 'CHECK TELEGRAM DASHBOARD!')
+      this.tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id;
     }
     this.getCurrentClient();
   }
 
   goToClientPage() {
-    const tgId = '445244007';
-    this.router.navigate(['/client', tgId]);
+    if(this.tgId) {
+      const tgId = this.tgId;
+      this.router.navigate(['/client', tgId]);
+    }
   }
 
   getCurrentClient() {
