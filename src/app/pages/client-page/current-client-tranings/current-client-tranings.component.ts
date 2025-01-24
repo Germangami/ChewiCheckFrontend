@@ -8,7 +8,7 @@ import { Client } from '../../../shared/Model/ClientModel/client-model';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngxs/store';
-import { MarkClientTrainingAsCompleted } from '../../../state/client/client.actions';
+import { ChangeClientData, MarkClientTrainingAsCompleted } from '../../../state/client/client.actions';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -34,6 +34,7 @@ export class CurrentClientTraningsComponent {
   set getCurrentClient(currentCLient: Client) {
     if (currentCLient) {
       this.currentCLient = currentCLient;
+      this.initFormGroup(currentCLient);
       this.checkIfTrainingDay();
       this.cdr.detectChanges();
     }
@@ -44,8 +45,30 @@ export class CurrentClientTraningsComponent {
   isChecked: boolean = false;
   formGroup: FormGroup;
 
-  constructor(private cdr: ChangeDetectorRef, private store: Store) {
+  constructor(private cdr: ChangeDetectorRef, private store: Store, private fb: FormBuilder) {
     
+  }
+
+  initFormGroup(client: Client) {
+    this.formGroup = this.fb.group({
+      _id: [client._id],
+      tgId: [client.tgId ? client.tgId : null],
+      note: [client.note ? client.note : null],
+      aboniment: [client.aboniment ? client.aboniment : null],
+      nickname: [client.nickname ? client.nickname : null],
+      startDate: [client.startDate ? client.startDate : null],
+      endDate: [client.endDate ? client.endDate : null],
+      totalTrainings: [client.totalTrainings ? client.totalTrainings : null],
+      remainingTrainings: [client.remainingTrainings ? client.remainingTrainings: null]
+    });
+  }
+
+  saveClientData() {
+    if (this.formGroup.valid) {
+      const updatedClient = this.formGroup.value;
+      this.store.dispatch(new ChangeClientData(updatedClient));
+      this.cdr.detectChanges();
+    }
   }
 
   checkIfTrainingDay() {

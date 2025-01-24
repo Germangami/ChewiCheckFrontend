@@ -1,3 +1,18 @@
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.form-field-overrides((
+    outlined-caret-color: black,
+    outlined-focus-outline-color: black,
+    outlined-focus-label-text-color: black
+  ));
+  @include mat.paginator-overrides((
+    container-text-color: black,
+    container-background-color: white,
+  ));
+}
+
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 

@@ -1,16 +1,28 @@
-@if ((clients$ | async); as clients) {
+
+
+@if ((paginatedClients$ | async); as clients) {
+    <div class="filter-paginator">
+        <mat-form-field appearance="outline" class="filter-paginator__flex">
+            <input matInput (input)="onFilterChange($event)" placeholder="Search by name or nickname..." />
+        </mat-form-field>
+
+        <mat-paginator
+            [length]="filteredClientsLength ? filteredClientsLength : totalClientsLength"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            aria-label="Select page"
+            (page)="onPageChange($event)">
+        </mat-paginator>
+    </div>
 
     <mat-accordion>
         @for (client of clients; track $index) {
-            
-            <mat-expansion-panel>
+        <mat-expansion-panel>
             <mat-expansion-panel-header>
-                <mat-panel-title> {{client?.first_name}} {{client?.nickname}}</mat-panel-title>
+            <mat-panel-title>{{ client?.first_name }} {{ client?.nickname }}</mat-panel-title>
             </mat-expansion-panel-header>
-                <app-client-info [getClient]="client"/>
-            </mat-expansion-panel>
+            <app-client-info [getClient]="client" />
+        </mat-expansion-panel>
         }
-
     </mat-accordion>
-    
 }

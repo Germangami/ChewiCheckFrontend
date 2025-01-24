@@ -4,7 +4,6 @@ import { tap } from "rxjs";
 import { Client } from "../../shared/Model/ClientModel/client-model";
 import { ChangeClientData, GetAllClients, MarkClientTrainingAsCompleted, SelectClientAboniment } from "./client.actions";
 import { ApiService } from "../../shared/services/api.service";
-import { WebSocketService } from "../../shared/services/web-socket.service";
 
 export interface ClientModel {
     client: Client[];
@@ -24,7 +23,7 @@ export interface AttendanceHistory {
 @Injectable()
 export class ClientState {
 
-    constructor(private apiService: ApiService, private webSocketService: WebSocketService) {
+    constructor(private apiService: ApiService) {
 
     }
 
@@ -55,7 +54,6 @@ export class ClientState {
                     ...state,
                     client: updatedClientList
                 });
-                this.webSocketService.emit('updateClient', updateClientData);
             })
         );
     }
@@ -76,7 +74,6 @@ export class ClientState {
                     client: updatedClientList
                 });
 
-                this.webSocketService.emit('updateClient', updateClientData);
             })
         )
     }
@@ -98,7 +95,6 @@ export class ClientState {
                     client: updatedClientList
                 });
 
-                this.webSocketService.emit('updateClient', updateClientData);
             })
         )
     }

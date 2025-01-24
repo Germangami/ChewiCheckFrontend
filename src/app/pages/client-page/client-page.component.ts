@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../shared/services/api.service';
 import { Client } from '../../shared/Model/ClientModel/client-model';
 import { WebSocketService } from '../../shared/services/web-socket.service';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { CurrentClientTraningsComponent } from './current-client-tranings/current-client-tranings.component';
 
 @Component({
@@ -52,7 +52,7 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 	}
 
 	updateClientDataWebSocket() {
-		return this.webSocketService.onClientUpdated().subscribe((updatedClient: Client) => {
+		return this.webSocketService.onClientUpdated().pipe(take(1)).subscribe((updatedClient: Client) => {
 			console.log(updatedClient, 'UPDATE CLIENT CLIENT-PAGE')
 			if (updatedClient._id === this.currentClient._id) {
 				this.currentClient = {...updatedClient};

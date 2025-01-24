@@ -1,7 +1,29 @@
 <mat-card appearance="outlined">
     <mat-card-content>
+        <form [formGroup]="formGroup">
+            <div>
+                <p>
+                    <mat-form-field appearance="outline" [style.width.px]=150>
+                      <mat-label>Total trainings</mat-label>
+                      <input matInput placeholder="Provide last name"
+                        formControlName="totalTrainings">
+                    </mat-form-field>
+            
+                    <mat-form-field appearance="outline" [style.width.px]=150>
+                      <mat-label>Remaining trainings</mat-label>
+                      <input matInput placeholder="Provide last name"
+                        formControlName="remainingTrainings">
+                    </mat-form-field>
+                  </p>
+            <button mat-fab extended (click)="saveClientData()">
+                <mat-icon>done_all</mat-icon>
+                Save
+            </button>
+            </div>
+        </form>
 
-        <div>
+
+        <!-- <div>
             <div>
                 <span>{{currentCLient.startDate | date:'dd.MM.yyyy'}} - {{currentCLient.endDate | date:'dd.MM.yyyy'}}</span>
               </div>
@@ -15,13 +37,13 @@
 
             <div class="button-container">          
                 <button mat-fab extended 
-                [disabled]="!isTrainingDay || isChecked"
+                [disabled]="isTrainingDay || isChecked"
                 (click)="markTrainingAsCompleted()">
                   <mat-icon>done_all</mat-icon>
                   Check-in for Training
                 </button>
             </div>
-        </div>
+        </div> -->
 
     </mat-card-content>
 </mat-card>
