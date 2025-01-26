@@ -13,6 +13,9 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+
 @Component({
     selector: 'app-coach-page',
     templateUrl: './coach-page.component.html',
@@ -26,7 +29,9 @@ import {MatInputModule} from '@angular/material/input';
       MatPaginatorModule,
       MatFormFieldModule,
       MatIconModule,
-      MatInputModule
+      MatInputModule,
+      MatButtonModule,
+      MatButtonModule
     ]
 })
 export class CoachPageComponent implements OnInit {

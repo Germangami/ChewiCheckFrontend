@@ -1,34 +1,118 @@
 @use '@angular/material' as mat;
 
 :root {
+  @include mat.tabs-overrides((
+    inactive-label-text-color: var(--tg-theme-text-color),
+    active-label-text-color: green,
+    active-indicator-color: orange,
+    divider-color: var(--tg-theme-text-color),
+    active-focus-label-text-color: red,
+    active-hover-label-text-color: yellow,
+    active-focus-indicator-color: var(--tg-theme-text-color),
+    active-hover-indicator-color: blue,
+    inactive-focus-label-text-color: white
+  ));
+  @include mat.expansion-overrides((
+    container-background-color: var(--tg-theme-bg-color),
+    container-text-color: var(--tg-theme-text-color),
+    header-text-color: var(--tg-theme-text-color),
+    actions-divider-color: var(--tg-theme-text-color),
+    header-indicator-color: var(--tg-theme-text-color),
+  ));
+  @include mat.card-overrides((
+    subtitle-text-color: orange,
+    elevated-container-color: var(--tg-theme-secondary-bg-color),
+    outlined-container-color: var(--tg-theme-bg-color),
+    outlined-outline-color: var(--tg-theme-text-color),
+  ));
   @include mat.form-field-overrides((
-    outlined-caret-color: black,
-    outlined-focus-outline-color: black,
-    outlined-focus-label-text-color: black
+    outlined-caret-color: var(--tg-theme-text-color),
+    outlined-focus-outline-color: var(--tg-theme-text-color),
+    outlined-focus-label-text-color: var(--tg-theme-text-color),
+    outlined-outline-color: var(--tg-theme-text-color),
+    outlined-label-text-color: var(--tg-theme-text-color),
+    outlined-input-text-color: var(--tg-theme-text-color),
+    outlined-input-text-placeholder-color: var(--tg-theme-text-color),
+    outlined-outline-width: 1px
   ));
   @include mat.paginator-overrides((
-    container-text-color: black,
-    container-background-color: white,
+    container-text-color: var(--tg-theme-text-color),
+    container-background-color: none,
+    enabled-icon-color: var(--tg-theme-text-color),
+    disabled-icon-color: var(--tg-theme-text-color),
+  ));
+  @include mat.select-overrides((
+    panel-background-color: white,
+    enabled-trigger-text-color: var(--tg-theme-text-color),
+    enabled-arrow-color: var(--tg-theme-text-color),
+    focused-arrow-color: var(--tg-theme-text-color),
+    trigger-text-font:  var(--tg-theme-text-color),
+  ));
+  @include mat.fab-overrides((
+    container-color: #a49dae,
+    foreground-color: var(--tg-theme-text-color),
+    disabled-state-container-color: #e0e0e0,
+    disabled-state-foreground-color: #9e9e9e
+  ));
+  @include mat.toolbar-overrides((
+    container-background-color: var(--tg-theme-secondary-bg-color),
+  ));
+  @include mat.icon-overrides((
+    color: var(--tg-theme-text-color),
   ));
 }
 
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  background: var(--tg-theme-bg-color); 
+  color: var(--tg-theme-text-color);
+}
 
 .page {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__main {
+    position: relative;
+    flex: 1 auto;
+    padding: 10px 15px 0 15px;
+  }
+
+  &__footer {
+    position: relative;
+  }
+
+  &__particles-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 0 20px;
-  
-    &__main {
-      flex: 1;
-    }
+    z-index: -1;
+  }
 }
 
 .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
   display: none;
+}
+
+.mat-expansion-panel {
+  outline: 1px solid white;
+}
+
+//mat-pagination
+.mat-mdc-paginator-container {
+  justify-content: space-between !important;
+  padding: 0 !important;
+}
+.mat-mdc-paginator-range-label {
+  margin: 0 !important;
 }
 
 

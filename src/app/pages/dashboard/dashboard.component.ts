@@ -14,6 +14,7 @@ import { Client } from '../../shared/Model/ClientModel/client-model';
 export class DashboardComponent implements OnInit {
   tgId: number;
   currentClient: Client;
+  mail = `chwalibogboxing@gmail.com`;
 
   constructor(private router: Router, private apiService: ApiService) {
 

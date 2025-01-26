@@ -9,7 +9,7 @@
           <textarea matInput formControlName="note"
                     [readonly]="!isClientDataEdit">
           </textarea>
-          <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
+          <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
         </mat-form-field>
       </p>
   
@@ -19,17 +19,13 @@
           <input matInput placeholder="Provide nickname"
             formControlName="nickname"
             [readonly]="!isClientDataEdit">
-          <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
+          <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
         </mat-form-field>
       </p>
   
       <div>
         <span>{{(formGroup.get('startDate').value | date:'dd.MM.yyyy') || 'Date not specified'}} - {{formGroup.get('endDate').value | date:'dd.MM.yyyy'}}</span>
       </div>
-
-      <!-- <div>
-        <span>totalTrainings {{formGroup.get('totalTrainings').value}} remainingTrainings {{formGroup.get('remainingTrainings').value}}</span>
-      </div> -->
   
       <p>
         <mat-form-field appearance="outline" [style.width.px]=150>

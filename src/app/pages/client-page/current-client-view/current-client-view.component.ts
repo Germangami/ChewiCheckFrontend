@@ -20,8 +20,11 @@ export class CurrentClientViewComponent {
   set getCurrentClient(currentCLient: Client) {
     if (currentCLient) {
       this.initFormGroup(currentCLient);
+      this.currentCLient = currentCLient;
     }
   }
+
+  currentCLient: Client;
 
   formGroup: FormGroup;
 

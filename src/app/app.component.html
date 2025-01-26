@@ -1,9 +1,11 @@
 <div class="page">
     <div class="page__main">
-        <router-outlet></router-outlet>
+      <router-outlet></router-outlet>
     </div>
-
-    <div class="page_footer">
-        <app-toolbar [tgId]="tgId"></app-toolbar>
+  
+    <div class="page__footer">
+      <app-toolbar [tgId]="tgId"></app-toolbar>
     </div>
+  
+    <ngx-particles [id]="id" [options]="particlesOptions" (particlesLoaded)="particlesLoaded($event)" class="page__particles-background"></ngx-particles>
 </div>

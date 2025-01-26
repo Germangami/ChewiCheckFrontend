@@ -1,49 +1,28 @@
 <mat-card appearance="outlined">
     <mat-card-content>
-        <form [formGroup]="formGroup">
-            <div>
-                <p>
-                    <mat-form-field appearance="outline" [style.width.px]=150>
-                      <mat-label>Total trainings</mat-label>
-                      <input matInput placeholder="Provide last name"
-                        formControlName="totalTrainings">
-                    </mat-form-field>
-            
-                    <mat-form-field appearance="outline" [style.width.px]=150>
-                      <mat-label>Remaining trainings</mat-label>
-                      <input matInput placeholder="Provide last name"
-                        formControlName="remainingTrainings">
-                    </mat-form-field>
-                  </p>
-            <button mat-fab extended (click)="saveClientData()">
-                <mat-icon>done_all</mat-icon>
-                Save
+        
+        <div class="grid-training-info mb-1">
+            <span class="grid-training-info__label">Start date</span>
+            <span class="grid-training-info__label">End date</span>
+            <span>{{currentCLient.startDate | date:'dd.MM.yyyy'}}</span>
+            <span>{{currentCLient.endDate | date:'dd.MM.yyyy'}}</span>
+        </div>
+
+        <div class="grid-training-info mb-1">
+            <span class="grid-training-info__label">Total trainings</span>
+            <span class="grid-training-info__label">Remaining trainings</span>
+            <span>{{currentCLient.totalTrainings}}</span>
+            <span>{{currentCLient.remainingTrainings}}</span>
+        </div>
+
+        <div class="button-container">          
+            <button mat-fab extended 
+            [disabled]="isTrainingDay || isChecked"
+            (click)="markTrainingAsCompleted()">
+              <mat-icon>done_all</mat-icon>
+              Check-in for Training
             </button>
-            </div>
-        </form>
-
-
-        <!-- <div>
-            <div>
-                <span>{{currentCLient.startDate | date:'dd.MM.yyyy'}} - {{currentCLient.endDate | date:'dd.MM.yyyy'}}</span>
-              </div>
-              
-            <p>
-                totalTrainings: {{currentCLient.totalTrainings}}
-            </p>
-            <p>
-                remainingTrainings: {{currentCLient.remainingTrainings}}
-            </p>
-
-            <div class="button-container">          
-                <button mat-fab extended 
-                [disabled]="isTrainingDay || isChecked"
-                (click)="markTrainingAsCompleted()">
-                  <mat-icon>done_all</mat-icon>
-                  Check-in for Training
-                </button>
-            </div>
-        </div> -->
+        </div>
 
     </mat-card-content>
 </mat-card>

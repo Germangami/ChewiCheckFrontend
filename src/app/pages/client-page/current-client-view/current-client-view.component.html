@@ -11,40 +11,14 @@
                       <textarea matInput formControlName="note"
                                 [readonly]="true">
                       </textarea>
-                      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                    </mat-form-field>
-                </p>
-
-                <p>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Nickname</mat-label>
-                        <input matInput placeholder="Nickname not provided yet"
-                        formControlName="nickname"
-                        [readonly]="true">
-                        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                    </mat-form-field>
-                </p>
-        
-                <p>
-                    <mat-form-field appearance="outline">
-                        <mat-label>First name</mat-label>
-                        <input matInput placeholder="First name not provided yet"
-                        formControlName="first_name"
-                        [readonly]="true">
-                        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-                    </mat-form-field>
-                </p>
-        
-                <p>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Last name</mat-label>
-                        <input matInput placeholder="Last name not provided yet"
-                        formControlName="last_name"
-                        [readonly]="true">
-                        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+                      <mat-icon matSuffix>message</mat-icon>
                     </mat-form-field>
                 </p>
                 
+                <div>
+                    <p><span class="form-field-container__client-info">Full Name:</span> {{currentCLient.first_name}} {{currentCLient.last_name}}</p>
+                    <p><span class="form-field-container__client-info">Nickname:</span> {{currentCLient.nickname}}</p>
+                </div>
             </div>
         
         </form>

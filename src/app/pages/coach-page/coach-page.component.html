@@ -1,17 +1,12 @@
 @if ((paginatedClients$ | async); as clients) {
-    <!-- <div class="filter-paginator">
-        <mat-form-field appearance="outline" class="filter-paginator__flex">
-            <input matInput (input)="onFilterChange($event)" placeholder="Search by name or nickname..." />
-        </mat-form-field>
-
-        <mat-paginator
-            [length]="filteredClientsLength ? filteredClientsLength : totalClientsLength"
-            [pageSize]="pageSize"
-            [pageSizeOptions]="[5, 10, 25, 100]"
-            aria-label="Select page"
-            (page)="onPageChange($event)">
-        </mat-paginator>
-    </div> -->
+    <div class="filter-paginator">
+        <div class="filter-paginator__settings mb-2">
+            <mat-form-field appearance="outline" class="filter-paginator__flex">
+                <input matInput (input)="onFilterChange($event)" placeholder="Search by name or nickname..." />
+                <mat-icon matSuffix>more_vert</mat-icon>
+            </mat-form-field>
+        </div>
+    </div>
 
     <mat-accordion>
         @for (client of clients; track $index) {
@@ -23,4 +18,11 @@
         </mat-expansion-panel>
         }
     </mat-accordion>
+    <mat-paginator
+            [length]="filteredClientsLength ? filteredClientsLength : totalClientsLength"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            aria-label="Select page"
+            (page)="onPageChange($event)">
+    </mat-paginator>
 }
