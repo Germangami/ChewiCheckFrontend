@@ -17,7 +17,7 @@
 
         <div class="button-container">          
             <button mat-fab extended 
-            [disabled]="isTrainingDay || isChecked"
+            [disabled]="!isTrainingDay || isChecked"
             (click)="markTrainingAsCompleted()">
               <mat-icon>done_all</mat-icon>
               Check-in for Training

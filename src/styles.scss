@@ -71,6 +71,15 @@ body {
   color: var(--tg-theme-text-color);
 }
 
+a {
+  color: --tg-theme-text-color;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .page {
   position: relative;
   height: 100%;
