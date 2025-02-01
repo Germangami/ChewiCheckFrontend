@@ -3,14 +3,14 @@
 :root {
   @include mat.tabs-overrides((
     inactive-label-text-color: var(--tg-theme-text-color),
-    active-label-text-color: green,
-    active-indicator-color: orange,
-    divider-color: var(--tg-theme-text-color),
-    active-focus-label-text-color: red,
-    active-hover-label-text-color: yellow,
-    active-focus-indicator-color: var(--tg-theme-text-color),
-    active-hover-indicator-color: blue,
-    inactive-focus-label-text-color: white
+    active-label-text-color: #2196F3,
+    active-indicator-color: #2196F3,
+    inactive-hover-label-text-color: #90CAF9,
+    active-hover-label-text-color: #1976D2,
+    inactive-focus-label-text-color: #90CAF9,
+    active-focus-label-text-color: #1976D2,
+    active-hover-indicator-color: #1976D2,
+    active-focus-indicator-color: #1976D2
   ));
   @include mat.expansion-overrides((
     container-background-color: var(--tg-theme-bg-color),
@@ -49,10 +49,10 @@
     trigger-text-font:  var(--tg-theme-text-color),
   ));
   @include mat.fab-overrides((
-    container-color: #a49dae,
+    container-color: var(--tg-theme-button-color),
     foreground-color: var(--tg-theme-text-color),
-    disabled-state-container-color: #e0e0e0,
-    disabled-state-foreground-color: #9e9e9e
+    disabled-state-container-color: gray,
+    disabled-state-foreground-color: white
   ));
   @include mat.toolbar-overrides((
     container-background-color: var(--tg-theme-secondary-bg-color),
@@ -112,7 +112,15 @@ a {
 }
 
 .mat-expansion-panel {
-  outline: 1px solid white;
+  border: 1px solid var(--tg-theme-text-color);
+}
+
+.mat-mdc-tab-body-content {
+  background-color: var(--tg-theme-bg-color) !important;
+}
+
+.mat-mdc-tab-body-wrapper {
+  background-color: var(--tg-theme-bg-color) !important;
 }
 
 //mat-pagination
@@ -124,6 +132,10 @@ a {
   margin: 0 !important;
 }
 
+
+.mb-05 {
+  margin-bottom: 0.5rem;
+}
 
 .mb-1 {
   margin-bottom: 1rem;

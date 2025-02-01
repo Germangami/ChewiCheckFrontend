@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../shared/Model/ClientModel/client-model';
 import { ClientInfoComponent } from "./client-info/client-info.component";
 import { CommonModule } from '@angular/common';
-import { Observable, map, take } from 'rxjs';
+import { Observable, Subject, Subscription, map, take, distinctUntilChanged } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { ClientSelectors } from '../../state/client/client.selectors';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -12,9 +12,15 @@ import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
-
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatTabsModule} from '@angular/material/tabs';
+import { GroupClientsComponent } from './group-clients/group-clients.component';
+import { IndividualClientsComponent } from './individual-clients/individual-clients.component';
+import { ClientFilterComponent } from './client-filter/client-filter.component';
 
 @Component({
     selector: 'app-coach-page',
@@ -31,87 +37,129 @@ import {MatButtonModule} from '@angular/material/button';
       MatIconModule,
       MatInputModule,
       MatButtonModule,
-      MatButtonModule
+      MatButtonModule,
+      MatMenuModule,
+      MatCheckboxModule, 
+      FormsModule,
+      ReactiveFormsModule,
+      MatTooltipModule,
+      MatTabsModule,
+      GroupClientsComponent,
+      IndividualClientsComponent,
+      ClientFilterComponent
     ]
 })
-export class CoachPageComponent implements OnInit {
-  clients$: Observable<Client[]>; // Исходные клиенты
-  paginatedClients$: Observable<Client[]>; // Отфильтрованные клиенты для текущей страницы
-  totalClientsLength: number = 0; // Общее число клиентов
-  pageSize: number = 10; // Количество записей на страницу
-  currentPage: number = 0; // Текущая страница
-  filterValue: string = ''; // Хранит текущее значение фильтра
-  filteredClients$: Observable<Client[]>; // Хранит список отфильтрованных клиентов
-  filteredClientsLength: number = 0; // Количество отфильтрованных клиентов
+export class CoachPageComponent implements OnInit, OnDestroy {
 
-  constructor(private cdr: ChangeDetectorRef, 
-              private store: Store,
-              private webSocketService: WebSocketService) {
+  clients$: Observable<Client[]>;
+  filteredClients: Client[] = [];
+  searchValue: string = '';
+
+  formGroup: FormGroup;
+
+  pageConfig = {
+    totalLength: 0,
+    filteredLength: 0,
+    pageSize: 10,
+    currentPage: 0
+  };
+
+  subscription: Subscription = new Subscription();
+
+  constructor(
+    private store: Store, 
+    private fb: FormBuilder,
+    private webSocketService: WebSocketService
+  ) {
 
   }
 
   ngOnInit(): void {
-    this.store.dispatch(new GetAllClients).subscribe();
+    this.subscription.add(this.initializeData());
+    this.subscription.add(this.initFormGroup());
+    this.subscription.add(this.formGroupChanges());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  initFormGroup() {
+    this.formGroup = this.fb.group({
+      active: [false],
+      expired: [false],
+      expiringSoon: [false],
+    });
+  }
+
+  formGroupChanges() {
+    return this.formGroup.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  initializeData() {
+    this.store.dispatch(new GetAllClients);
     this.clients$ = this.store.select(ClientSelectors.getUsers);
-    this.clients$.subscribe((clients) => {
-      this.totalClientsLength = clients.length; // Обновляем общее число клиентов
+    return this.clients$.subscribe(clients => {
+      this.filteredClients = clients;
+      this.pageConfig.filteredLength = clients.length;
+    });
+  }
+
+  onFilteredClientsChange(clients: Client[]) {
+    this.filteredClients = clients;
+    this.pageConfig.filteredLength = clients.length;
+    this.pageConfig.currentPage = 0;
+  }
+
+  onFilterChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchValue = input.value.toLowerCase();
+    this.applyFilters();
+  }
+
+  isExpiringSoon(client: Client): boolean {
+    if (!client.endDate) return false;
+    
+    const currentDate = new Date();
+    const endDate = new Date(client.endDate);
+    const daysUntilExpiration = Math.floor((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
+  }
+
+  private applyFilters() {
+    this.filteredClients = this.filteredClients.filter(client => {
+      const firstName = client.first_name?.toLowerCase() || '';
+      const nickname = client.nickname?.toLowerCase() || '';
+      const matchesSearch = !this.searchValue || 
+        firstName.includes(this.searchValue) || 
+        nickname.includes(this.searchValue);
+
+      if (!matchesSearch) return false;
+
+      const { active, expired, expiringSoon } = this.formGroup.value;
+      const noFiltersSelected = !active && !expired && !expiringSoon;
+
+      if (noFiltersSelected) return true;
+
+      return (
+        (active && client.isActive) ||
+        (expired && !client.isActive) ||
+        (expiringSoon && this.isExpiringSoon(client))
+      );
     });
 
-    this.filteredClients$ = this.clients$.pipe(
-      map((clients) => {
-        this.filteredClientsLength = clients.length; // Изначально отображаем всех клиентов
-        return clients;
-      })
-    );
-
-    this.paginatedClients$ = this.clients$.pipe(
-      map((clients) =>
-        clients.slice(this.currentPage * this.pageSize, this.currentPage * this.pageSize + this.pageSize)
-      )
-    );
-    this.updateClientDataWebSocket();
+    this.pageConfig.filteredLength = this.filteredClients.length;
+    this.pageConfig.currentPage = 0;
   }
 
   onPageChange(event: PageEvent): void {
-    this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex;
-    this.paginatedClients$ = this.clients$.pipe(
-      map((clients) =>
-        clients.slice(this.currentPage * this.pageSize, this.currentPage * this.pageSize + this.pageSize)
-      )
-    );
+    this.pageConfig.pageSize = event.pageSize;
+    this.pageConfig.currentPage = event.pageIndex;
   }
 
-  onFilterChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.filterValue = input.value.toLowerCase();
-  
-    this.filteredClients$ = this.clients$.pipe(
-      map((clients) =>
-        clients.filter((client) => {
-          const firstName = client.first_name?.toLowerCase() || ''; // Проверяем first_name
-          const nickname = client.nickname?.toLowerCase() || '';   // Проверяем nickname
-          return firstName.includes(this.filterValue) || nickname.includes(this.filterValue);
-        })
-      )
-    );
-  
-    this.filteredClients$.subscribe((clients) => {
-      this.filteredClientsLength = clients.length; // Обновляем количество отфильтрованных клиентов
-    });
-  
-    this.paginatedClients$ = this.filteredClients$.pipe(
-      map((clients) =>
-        clients.slice(this.currentPage * this.pageSize, this.currentPage * this.pageSize + this.pageSize)
-      )
-    );
+  get paginatedClients(): Client[] {
+    const startIndex = this.pageConfig.currentPage * this.pageConfig.pageSize;
+    return this.filteredClients.slice(startIndex, startIndex + this.pageConfig.pageSize);
   }
-
-  updateClientDataWebSocket() {
-		return this.webSocketService.onClientUpdated().pipe(take(1)).subscribe((updatedClient: Client) => {
-			console.log(updatedClient, 'UPDATE CLIENT COACH-PAGE')
-      this.store.dispatch(new ChangeClientData(updatedClient));
-		});
-	}
-  
 }

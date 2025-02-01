@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideStore } from '@ngxs/store';
 import { ClientState } from './state/client/client.state';
 import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
         ClientState
       ],
       withNgxsReduxDevtoolsPlugin(),
-    ),
+    ), 
+    provideCharts(withDefaultRegisterables())
   ]
 };

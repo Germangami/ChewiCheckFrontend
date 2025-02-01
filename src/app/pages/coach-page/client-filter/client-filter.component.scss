@@ -1,0 +1,14 @@
+.filter-paginator {
+    display: flex;
+    flex-direction: column;
+
+    &__flex {
+        flex: 1 auto;
+    }
+
+    &__settings {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

@@ -16,10 +16,6 @@ export class ApiService {
     return this.http.put<Client>(`${this.chewiCheckBackEndServer}/update`, client);
   }
 
-  updateClientTrainings(_id: string): Observable<Client> {
-    return this.http.put<Client>(`${this.chewiCheckBackEndServer}/updateClientTrainings`, { _id });
-  }
-
   updateClientAboniment(_id: string, aboniment: number): Observable<Client> {
     const abonimentData = { _id, aboniment };
     return this.http.put<Client>(`${this.chewiCheckBackEndServer}/updateClientAboniment`, abonimentData)
@@ -31,5 +27,16 @@ export class ApiService {
 
   getCurrentClient(tgId: number | string): Observable<Client> {
     return this.http.get<Client>(`${this.chewiCheckBackEndServer}/getCurrentClient/${tgId}`);
+  }
+
+  updateGroupTraining(_id: string): Observable<Client> {
+    return this.http.put<Client>(`${this.chewiCheckBackEndServer}/updateGroupTraining`, { _id });
+  }
+
+  updateIndividualTraining(_id: string, sessionId: string, status: string): Observable<Client> {
+    return this.http.put<Client>(
+      `${this.chewiCheckBackEndServer}/updateIndividualTraining`, 
+      { _id, sessionId, status }
+    );
   }
 }

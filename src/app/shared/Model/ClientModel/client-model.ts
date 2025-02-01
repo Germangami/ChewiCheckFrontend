@@ -11,6 +11,7 @@ export interface Client {
     aboniment: number;
     startDate?: string,
     endDate?: string,
+    isActive?: boolean,
     _id: string
 }
 

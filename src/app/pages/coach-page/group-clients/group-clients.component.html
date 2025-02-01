@@ -1,0 +1,19 @@
+<mat-accordion>
+    @for (client of clients; track $index) {
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{ client?.first_name }} {{ client?.nickname }}
+                @if (client.isActive) {
+                    <span class="status-badge active"> Active</span>
+                } @else if(isExpiringSoon(client)) {
+                    <span class="status-badge expiring"> Expires Soon</span>
+                } @else {
+                    <span class="status-badge expired"> Expired</span>
+                }
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-client-info [getClient]="client"/>
+    </mat-expansion-panel>
+    }
+</mat-accordion>

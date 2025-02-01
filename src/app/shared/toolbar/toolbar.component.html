@@ -1,6 +1,6 @@
 <mat-toolbar>
   <div class="tolbar">
-    @if(currentClient && currentClientTgId) {
+    <!-- @if(currentClient && currentClientTgId) {
       @if (currentClient.role === 'Coach') {
         <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
         [routerLink]="['/coach']">
@@ -14,23 +14,31 @@
       } @else {
         <mat-icon>https</mat-icon>
       }
-    }
+    } -->
 
-    <!-- <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
     [routerLink]="['/coach']">
       <mat-icon>people</mat-icon>
-    </button> -->
-
+    </button>
 
     <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
     [routerLink]="['']">
       <mat-icon>home</mat-icon>
     </button>
 
-    <!-- <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
     [routerLink]="['/client', 469408413]">
       <mat-icon>person</mat-icon>
-    </button> -->
+    </button>
+
+    <!-- <img class="box-1"src="box-3.png" alt="box-1" [routerLink]="['/coach']">
+
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    [routerLink]="['']">
+      <mat-icon>home</mat-icon>
+    </button>
+
+    <img class="box-1" src="chewi-check-img-8.png" alt="box-2" [routerLink]="['/client', 469408413]"> -->
 
   </div>
 </mat-toolbar>

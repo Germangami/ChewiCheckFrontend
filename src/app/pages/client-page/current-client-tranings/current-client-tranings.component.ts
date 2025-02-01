@@ -8,7 +8,7 @@ import { Client } from '../../../shared/Model/ClientModel/client-model';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngxs/store';
-import { ChangeClientData, MarkClientTrainingAsCompleted } from '../../../state/client/client.actions';
+import { ChangeClientData, MarkGroupTrainingAsCompleted } from '../../../state/client/client.actions';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -79,7 +79,7 @@ export class CurrentClientTraningsComponent {
   }
 
   markTrainingAsCompleted() {
-    this.store.dispatch(new MarkClientTrainingAsCompleted(this.currentCLient._id));
+    this.store.dispatch(new MarkGroupTrainingAsCompleted(this.currentCLient._id));
     this.isChecked = true;
     this.cdr.detectChanges();
   }

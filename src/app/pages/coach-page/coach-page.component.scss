@@ -6,18 +6,3 @@
 .example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
     margin-left: 8px;
 }
-
-.filter-paginator {
-    display: flex;
-    flex-direction: column;
-
-    &__flex {
-        flex: 1 auto;
-    }
-
-    &__settings {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-}

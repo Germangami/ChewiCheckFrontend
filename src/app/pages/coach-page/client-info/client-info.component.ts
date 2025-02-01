@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { ChangeClientData, SelectClientAboniment } from '../../../state/client/client.actions';
 import { Client } from '../../../shared/Model/ClientModel/client-model';
@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { WebSocketService } from '../../../shared/services/web-socket.service';
 
 @Component({
   selector: 'app-client-info',
@@ -32,7 +33,8 @@ import { CommonModule } from '@angular/common';
     MatDatepickerModule,
     MatSelectModule,
     CommonModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientInfoComponent implements OnInit {
 
@@ -53,7 +55,12 @@ export class ClientInfoComponent implements OnInit {
     {label: 'premium - 300zł', value: 300},
   ];
 
-  constructor(private fb: FormBuilder, private store: Store, private cdr: ChangeDetectorRef) {
+  constructor(
+    private fb: FormBuilder, 
+    private store: Store, 
+    private cdr: ChangeDetectorRef,
+    private webSocketService: WebSocketService
+  ) {
     
   }
 
@@ -77,8 +84,10 @@ export class ClientInfoComponent implements OnInit {
   }
 
   selectAboniment(event: MatSelectChange) {
-    console.log(event.value, 'LOG LOG LOG', this.formGroup.get('_id').value, '_id');
-    this.store.dispatch(new SelectClientAboniment(event.value, this.formGroup.get('_id').value));
+    this.store.dispatch(new SelectClientAboniment(event.value, this.formGroup.get('_id').value))
+      .subscribe(() => {
+        this.webSocketService.emit('clientUpdated', this.client);
+      });
     this.cdr.detectChanges();
   }
 
