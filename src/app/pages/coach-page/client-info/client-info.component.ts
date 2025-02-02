@@ -74,12 +74,12 @@ export class ClientInfoComponent implements OnInit {
       _id: [client._id],
       tgId: [client.tgId ? client.tgId : null],
       note: [client.note ? client.note : null],
-      aboniment: [client.aboniment ? client.aboniment : null],
+      aboniment: [client.groupTraining.aboniment ? client.groupTraining.aboniment : null],
       nickname: [client.nickname ? client.nickname : null],
-      startDate: [client.startDate ? client.startDate : null],
-      endDate: [client.endDate ? client.endDate : null],
-      totalTrainings: [client.totalTrainings ? client.totalTrainings : null],
-      remainingTrainings: [client.remainingTrainings ? client.remainingTrainings: null]
+      startDate: [client.groupTraining.startDate ? client.groupTraining.startDate : null],
+      endDate: [client.groupTraining.endDate ? client.groupTraining.endDate : null],
+      totalTrainings: [client.groupTraining.totalTrainings ? client.groupTraining.totalTrainings : null],
+      remainingTrainings: [client.groupTraining.remainingTrainings ? client.groupTraining.remainingTrainings: null]
     });
   }
 

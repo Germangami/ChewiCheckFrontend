@@ -31,13 +31,19 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 							}
 
 	ngOnInit(): void {
+		console.log('ASDKJHAS DKJAS KJDAS DHKJAS DHKAJHS')
+		this.apiService.getCurrentClient(469408413).subscribe(response => {
+			console.log(response, 'CLIENT PAGE!');
+		})
 		this.subscription.add(this.getRoute());
 		this.subscription.add(
 			this.store.select(ClientSelectors.getUsers).subscribe(clients => {
+				console.log(clients, 'CLIENTS');
 				if (this.currentClient) {
 					const updatedClient = clients.find(c => c._id === this.currentClient._id);
 					if (updatedClient) {
 						this.currentClient = updatedClient;
+						console.log(this.currentClient, 'CURRENT CLIENT');
 						this.cdr.detectChanges();
 					}
 				}
@@ -63,11 +69,12 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 		if (tgId) {
 				return this.apiService.getCurrentClient(tgId).subscribe({
 						next: (response) => {
+								console.log('Received client:', response);
 								this.currentClient = response;
 								this.cdr.detectChanges();
 						},
 						error: (error) => {
-								console.log(error, 'ERROR ClientPageComponent');
+								console.error('Error getting client:', error);
 						}
 				});
 		}

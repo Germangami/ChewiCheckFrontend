@@ -52,14 +52,14 @@ export class CurrentClientTraningsComponent {
   initFormGroup(client: Client) {
     this.formGroup = this.fb.group({
       _id: [client._id],
-      tgId: [client.tgId ? client.tgId : null],
-      note: [client.note ? client.note : null],
-      aboniment: [client.aboniment ? client.aboniment : null],
-      nickname: [client.nickname ? client.nickname : null],
-      startDate: [client.startDate ? client.startDate : null],
-      endDate: [client.endDate ? client.endDate : null],
-      totalTrainings: [client.totalTrainings ? client.totalTrainings : null],
-      remainingTrainings: [client.remainingTrainings ? client.remainingTrainings: null]
+      tgId: [client.tgId],
+      note: [client.note],
+      aboniment: [client.groupTraining?.aboniment],
+      nickname: [client.nickname],
+      startDate: [client.groupTraining?.startDate],
+      endDate: [client.groupTraining?.endDate],
+      totalTrainings: [client.groupTraining?.totalTrainings],
+      remainingTrainings: [client.groupTraining?.remainingTrainings]
     });
   }
 

@@ -39,4 +39,11 @@ export class ApiService {
       { _id, sessionId, status }
     );
   }
+
+  scheduleIndividualTraining(_id: string, date: string, time: string): Observable<Client> {
+    return this.http.post<Client>(
+      `${this.chewiCheckBackEndServer}/scheduleIndividualTraining`,
+      { _id, date, time }
+    );
+  }
 }

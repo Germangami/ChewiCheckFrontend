@@ -1,13 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../shared/Model/ClientModel/client-model';
-import { ClientInfoComponent } from "./client-info/client-info.component";
 import { CommonModule } from '@angular/common';
-import { Observable, Subject, Subscription, map, take, distinctUntilChanged } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { ClientSelectors } from '../../state/client/client.selectors';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ChangeClientData, GetAllClients } from '../../state/client/client.actions';
-import { WebSocketService } from '../../shared/services/web-socket.service';
+import { GetAllClients } from '../../state/client/client.actions';
 import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -29,7 +27,6 @@ import { ClientFilterComponent } from './client-filter/client-filter.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     imports: [
-      ClientInfoComponent, 
       CommonModule, 
       MatExpansionModule, 
       MatPaginatorModule,
@@ -68,8 +65,7 @@ export class CoachPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store, 
-    private fb: FormBuilder,
-    private webSocketService: WebSocketService
+    private fb: FormBuilder
   ) {
 
   }
@@ -93,7 +89,7 @@ export class CoachPageComponent implements OnInit, OnDestroy {
   }
 
   formGroupChanges() {
-    return this.formGroup.valueChanges.subscribe(() => this.applyFilters());
+    // return this.formGroup.valueChanges.subscribe(() => this.applyFilters());
   }
 
   initializeData() {
@@ -108,48 +104,6 @@ export class CoachPageComponent implements OnInit, OnDestroy {
   onFilteredClientsChange(clients: Client[]) {
     this.filteredClients = clients;
     this.pageConfig.filteredLength = clients.length;
-    this.pageConfig.currentPage = 0;
-  }
-
-  onFilterChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.searchValue = input.value.toLowerCase();
-    this.applyFilters();
-  }
-
-  isExpiringSoon(client: Client): boolean {
-    if (!client.endDate) return false;
-    
-    const currentDate = new Date();
-    const endDate = new Date(client.endDate);
-    const daysUntilExpiration = Math.floor((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
-  }
-
-  private applyFilters() {
-    this.filteredClients = this.filteredClients.filter(client => {
-      const firstName = client.first_name?.toLowerCase() || '';
-      const nickname = client.nickname?.toLowerCase() || '';
-      const matchesSearch = !this.searchValue || 
-        firstName.includes(this.searchValue) || 
-        nickname.includes(this.searchValue);
-
-      if (!matchesSearch) return false;
-
-      const { active, expired, expiringSoon } = this.formGroup.value;
-      const noFiltersSelected = !active && !expired && !expiringSoon;
-
-      if (noFiltersSelected) return true;
-
-      return (
-        (active && client.isActive) ||
-        (expired && !client.isActive) ||
-        (expiringSoon && this.isExpiringSoon(client))
-      );
-    });
-
-    this.pageConfig.filteredLength = this.filteredClients.length;
     this.pageConfig.currentPage = 0;
   }
 

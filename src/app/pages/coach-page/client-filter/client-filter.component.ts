@@ -67,9 +67,9 @@ export class ClientFilterComponent implements OnInit, OnDestroy {
   }
 
   isExpiringSoon(client: Client): boolean {
-    if (!client.endDate) return false;
+    if (!client.groupTraining.endDate) return false;
     const currentDate = new Date();
-    const endDate = new Date(client.endDate);
+    const endDate = new Date(client.groupTraining.endDate);
     const daysUntilExpiration = Math.floor((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
     return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
   }
@@ -90,8 +90,8 @@ export class ClientFilterComponent implements OnInit, OnDestroy {
       if (noFiltersSelected) return true;
 
       return (
-          (active && client.isActive) ||
-          (expired && !client.isActive) ||
+          (active && client.groupTraining.isActive) ||
+          (expired && !client.groupTraining.isActive) ||
           (expiringSoon && this.isExpiringSoon(client))
       );
     });

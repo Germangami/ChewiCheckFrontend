@@ -1,28 +1,30 @@
 <mat-card appearance="outlined">
     <mat-card-content>
-        
-        <div class="grid-training-info mb-1">
-            <span class="grid-training-info__label">Start date</span>
-            <span class="grid-training-info__label">End date</span>
-            <span>{{currentCLient.startDate | date:'dd.MM.yyyy'}}</span>
-            <span>{{currentCLient.endDate | date:'dd.MM.yyyy'}}</span>
-        </div>
+        <!-- Добавляем проверку на существование groupTraining -->
+        @if (currentCLient?.groupTraining) {
+            <div class="grid-training-info mb-1">
+                <span class="grid-training-info__label">Start date</span>
+                <span class="grid-training-info__label">End date</span>
+                <span>{{currentCLient.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
+                <span>{{currentCLient.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
+            </div>
 
-        <div class="grid-training-info mb-1">
-            <span class="grid-training-info__label">Total trainings</span>
-            <span class="grid-training-info__label">Remaining trainings</span>
-            <span>{{currentCLient.totalTrainings}}</span>
-            <span>{{currentCLient.remainingTrainings}}</span>
-        </div>
+            <div class="grid-training-info mb-1">
+                <span class="grid-training-info__label">Total trainings</span>
+                <span class="grid-training-info__label">Remaining trainings</span>
+                <span>{{currentCLient.groupTraining.totalTrainings}}</span>
+                <span>{{currentCLient.groupTraining.remainingTrainings}}</span>
+            </div>
 
-        <div class="button-container">          
-            <button mat-fab extended 
-            [disabled]="isTrainingDay || isChecked"
-            (click)="markTrainingAsCompleted()">
-              <mat-icon>done_all</mat-icon>
-              Check-in for Training
-            </button>
-        </div>
+            <div class="button-container">          
+                <button mat-fab extended 
+                [disabled]="isTrainingDay || isChecked"
+                (click)="markTrainingAsCompleted()">
+                    <mat-icon>done_all</mat-icon>
+                    Check-in for Training
+                </button>
+            </div>
+        }
 
         <!-- <form [formGroup]="formGroup">
             <p>
