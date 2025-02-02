@@ -1,18 +1,20 @@
 <mat-toolbar>
   <div class="tolbar">
     @if(currentClient && currentClientTgId) {
-      @if (currentClient.role === 'Coach') {
+      @if (currentClient.role === 'coach') {
         <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
         [routerLink]="['/coach']">
           <mat-icon>people</mat-icon>
         </button>
-      } @else if (currentClient.role === 'Client') {
+      } @else if (currentClient.role === 'client') {
         <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
         [routerLink]="['/client', currentClientTgId]">
           <mat-icon>person</mat-icon>
         </button>
       } @else {
-        <mat-icon>https</mat-icon>
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+          <mat-icon>https</mat-icon>
+        </button>
       }
     }
 
