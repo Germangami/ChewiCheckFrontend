@@ -1,1 +1,12 @@
-<p>individual-clients works!</p>
+<mat-accordion>
+    @for (client of clients; track $index) {
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    {{ client?.first_name }} {{ client?.nickname }}
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-client-info [getClient]="client"/>
+        </mat-expansion-panel>
+    }
+</mat-accordion>

@@ -2,10 +2,23 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
 }
 
 .button-container {
     display: flex;
     justify-content: center;
     gap: 1rem;
+}
+
+.grid-training-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+
+    &__label {
+        font-weight: 600;
+    }
 }

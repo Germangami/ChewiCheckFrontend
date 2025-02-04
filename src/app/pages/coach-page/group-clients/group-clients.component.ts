@@ -26,10 +26,10 @@ export class GroupClientsComponent {
   @Input() clients: Client[];
 
   isExpiringSoon(client: Client): boolean {
-    if (!client.groupTraining.endDate) return false;
+    if (!client?.groupTraining?.endDate) return false;
     
     const currentDate = new Date();
-    const endDate = new Date(client.groupTraining.endDate);
+    const endDate = new Date(client?.groupTraining?.endDate);
     const daysUntilExpiration = Math.floor((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
     
     return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;

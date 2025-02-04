@@ -47,60 +47,46 @@ export class ClientInfoComponent implements OnInit {
     }
   }
 
-  formGroup: FormGroup;
-  isClientDataEdit = false;
+  isClientDataEdit: boolean = false;
   client: Client;
-  aboniments: {label: string, value: number}[] = [
-    {label: 'basic - 200zł', value: 200},
-    {label: 'premium - 300zł', value: 300},
-  ];
+  formGroup: FormGroup;
 
-  constructor(
-    private fb: FormBuilder, 
-    private store: Store, 
-    private cdr: ChangeDetectorRef,
-    private webSocketService: WebSocketService
-  ) {
-    
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
+
   }
 
-
   ngOnInit(): void {
-    
+
   }
 
   initFormGroup(client: Client) {
     this.formGroup = this.fb.group({
       _id: [client._id],
-      tgId: [client.tgId ? client.tgId : null],
-      note: [client.note ? client.note : null],
-      aboniment: [client.groupTraining.aboniment ? client.groupTraining.aboniment : null],
-      nickname: [client.nickname ? client.nickname : null],
-      startDate: [client.groupTraining.startDate ? client.groupTraining.startDate : null],
-      endDate: [client.groupTraining.endDate ? client.groupTraining.endDate : null],
-      totalTrainings: [client.groupTraining.totalTrainings ? client.groupTraining.totalTrainings : null],
-      remainingTrainings: [client.groupTraining.remainingTrainings ? client.groupTraining.remainingTrainings: null]
+      tgId: [client.tgId],
+      note: [client.note],
+      nickname: [client?.nickname],
+      // Условные поля для группового клиента
+      aboniment: [client.groupTraining?.aboniment],
+      startDate: [client.groupTraining?.startDate],
+      endDate: [client.groupTraining?.endDate],
+      totalTrainings: [client.groupTraining?.totalTrainings],
+      remainingTrainings: [client.groupTraining?.remainingTrainings],
+      // Условные поля для индивидуального клиента
+      pricePerSession: [client.individualTraining?.pricePerSession],
+      preferredDays: [client.individualTraining?.preferredDays],
+      preferredTime: [client.individualTraining?.preferredTime],
     });
   }
 
-  selectAboniment(event: MatSelectChange) {
-    this.store.dispatch(new SelectClientAboniment(event.value, this.formGroup.get('_id').value))
-      .subscribe(() => {
-        this.webSocketService.emit('clientUpdated', this.client);
-      });
-    this.cdr.detectChanges();
-  }
-
   editClientData() {
-    this.isClientDataEdit = !this.isClientDataEdit;
+    this.isClientDataEdit = true;
   }
 
   saveClientData() {
     if (this.formGroup.valid) {
       const updatedClient = this.formGroup.value;
-      this.store.dispatch(new ChangeClientData(updatedClient));
       this.isClientDataEdit = false;
-      this.cdr.detectChanges();
+      // Логика для сохранения данных клиента
     }
   }
 

@@ -1,17 +1,26 @@
-<div class="filter-paginator mb-1">
-    <div class="filter-paginator__settings">
-        <mat-form-field appearance="outline" class="filter-paginator__flex">
-            <input matInput (input)="onFilterChange($event)" placeholder="Search by name or nickname..." />
-            <button mat-icon-button matSuffix [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <form [formGroup]="formGroup">
-                    <p><mat-checkbox formControlName="active">active</mat-checkbox></p>
-                    <p><mat-checkbox formControlName="expired">expired</mat-checkbox></p>
-                    <p><mat-checkbox formControlName="expiringSoon">expiringSoon</mat-checkbox></p>
-                </form>
-              </mat-menu>
-        </mat-form-field>
+<form [formGroup]="filterForm">
+    <div class="filter-paginator mb-1">
+        <div class="filter-paginator__settings">
+            <mat-form-field appearance="outline" class="filter-paginator__flex">
+                <input 
+                    matInput 
+                    formControlName="search" 
+                    placeholder="Search by name or nickname..."/>
+                <button 
+                    mat-icon-button 
+                    matSuffix 
+                    [matMenuTriggerFor]="menu" 
+                    aria-label="Filter menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <div class="filter-paginator__flex">
+                        <mat-checkbox formControlName="active">Active</mat-checkbox>
+                        <mat-checkbox formControlName="expired">Expired</mat-checkbox>
+                        <mat-checkbox formControlName="expiringSoon">Expiring Soon</mat-checkbox>
+                    </div>
+                </mat-menu>
+            </mat-form-field>
+        </div>
     </div>
-</div>
+</form>

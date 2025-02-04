@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { Client } from '../../shared/Model/ClientModel/client-model';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
+import { Client, ClientType } from '../../shared/Model/ClientModel/client-model';
 import { CommonModule } from '@angular/common';
-import { Observable, Subscription } from 'rxjs';
+import { combineLatest, map, Observable, startWith, Subscription } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { ClientSelectors } from '../../state/client/client.selectors';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { GetAllClients } from '../../state/client/client.actions';
+import { GetAllClients, UpdatePagination } from '../../state/client/client.actions';
 import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -19,6 +19,11 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { GroupClientsComponent } from './group-clients/group-clients.component';
 import { IndividualClientsComponent } from './individual-clients/individual-clients.component';
 import { ClientFilterComponent } from './client-filter/client-filter.component';
+
+export interface PaginationConfig {
+  pageSize: number;
+  currentPage: number;
+}
 
 @Component({
     selector: 'app-coach-page',
@@ -46,74 +51,47 @@ import { ClientFilterComponent } from './client-filter/client-filter.component';
       ClientFilterComponent
     ]
 })
-export class CoachPageComponent implements OnInit, OnDestroy {
+export class CoachPageComponent {
 
-  clients$: Observable<Client[]>;
-  filteredClients: Client[] = [];
-  searchValue: string = '';
+   // Переместите инициализацию vm$ в конструктор
+   vm$: Observable<{
+    groupClients: Client[];
+    individualClients: Client[];
+    pagination: PaginationConfig;
+  }>;
 
-  formGroup: FormGroup;
+  pageSizeOptions = [5, 10, 25, 100];
+  trackById: TrackByFunction<Client> = (_, client) => client._id;
 
-  pageConfig = {
-    totalLength: 0,
-    filteredLength: 0,
-    pageSize: 10,
-    currentPage: 0
-  };
+  constructor(private store: Store) {
+    // Инициализируйте vm$ после получения store
+    this.vm$ = combineLatest([
+      this.store.select(ClientSelectors.getFilteredClients).pipe(
+          startWith([]) // Защита от undefined
+      ),
+      this.store.select(ClientSelectors.getPaginationConfig).pipe(
+          startWith({ pageSize: 10, currentPage: 0 })
+      )
+  ]).pipe(
+      map(([filteredClients, pagination]) => ({
+          groupClients: this.filterByType(filteredClients, ClientType.GROUP),
+          individualClients: this.filterByType(filteredClients, ClientType.INDIVIDUAL),
+          pagination
+      }))
+  );
 
-  subscription: Subscription = new Subscription();
-
-  constructor(
-    private store: Store, 
-    private fb: FormBuilder
-  ) {
-
+    this.store.dispatch(new GetAllClients());
   }
 
-  ngOnInit(): void {
-    this.subscription.add(this.initializeData());
-    this.subscription.add(this.initFormGroup());
-    this.subscription.add(this.formGroupChanges());
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  initFormGroup() {
-    this.formGroup = this.fb.group({
-      active: [false],
-      expired: [false],
-      expiringSoon: [false],
-    });
-  }
-
-  formGroupChanges() {
-    // return this.formGroup.valueChanges.subscribe(() => this.applyFilters());
-  }
-
-  initializeData() {
-    this.store.dispatch(new GetAllClients);
-    this.clients$ = this.store.select(ClientSelectors.getUsers);
-    return this.clients$.subscribe(clients => {
-      this.filteredClients = clients;
-      this.pageConfig.filteredLength = clients.length;
-    });
-  }
-
-  onFilteredClientsChange(clients: Client[]) {
-    this.filteredClients = clients;
-    this.pageConfig.filteredLength = clients.length;
-    this.pageConfig.currentPage = 0;
-  }
-
+  // Остальной код без изменений
   onPageChange(event: PageEvent): void {
-    this.pageConfig.pageSize = event.pageSize;
-    this.pageConfig.currentPage = event.pageIndex;
+    this.store.dispatch(new UpdatePagination({
+      pageSize: event.pageSize,
+      currentPage: event.pageIndex
+    }));
   }
 
-  get paginatedClients(): Client[] {
-    const startIndex = this.pageConfig.currentPage * this.pageConfig.pageSize;
-    return this.filteredClients.slice(startIndex, startIndex + this.pageConfig.pageSize);
+  private filterByType(clients: Client[], type: ClientType): Client[] {
+    return clients.filter(client => client.clientType === type);
   }
 }

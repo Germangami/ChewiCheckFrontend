@@ -1,8 +1,8 @@
-<form [formGroup]="formGroup">
+<!-- <form [formGroup]="formGroup">
 
   <div class="form-field-container">
 
-    @if (client.groupTraining.aboniment) {
+    @if (client?.groupTraining?.aboniment) {
       <p>
         <mat-form-field appearance="outline">
           <mat-label>Provide note</mat-label>
@@ -57,24 +57,57 @@
           Save
         </button>
     </div>
-    } @else {
-
-      <span>Aboniment</span>
-
-      <div>
-          <mat-form-field appearance="outline">
-            <mat-label>Select aboniment</mat-label>
-            <mat-select (selectionChange)="selectAboniment($event)">
-              @for (aboniment of aboniments; track aboniment) {
-                <mat-option 
-                [value]="aboniment.value">{{aboniment.label}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-      </div>
-
-    }
-
+    } 
   </div>  
 
+</form> -->
+
+<form [formGroup]="formGroup">
+  <div class="form-field-container mb-1">
+    <mat-form-field appearance="outline">
+      <mat-label>Provide note</mat-label>
+      <textarea matInput formControlName="note"
+                [readonly]="!isClientDataEdit">
+      </textarea>
+      <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Nickname</mat-label>
+      <input matInput placeholder="Provide nickname"
+        formControlName="nickname"
+        [readonly]="!isClientDataEdit">
+      <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
+    </mat-form-field>
+  </div>
+
+  @if (client.clientType === 'group') {
+    <div class="grid-training-info mb-1">
+      <span>Start date</span>
+      <span>End date</span>
+      <span class="grid-training-info__label">{{client.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
+      <span class="grid-training-info__label">{{client.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
+  </div>
+
+  <div class="grid-training-info mb-1">
+      <span>Total trainings</span>
+      <span>Remaining trainings</span>
+      <span class="grid-training-info__label">{{client.groupTraining.totalTrainings}}</span>
+      <span class="grid-training-info__label">{{client.groupTraining.remainingTrainings}}</span>
+  </div>
+
+  <div class="button-container">          
+      <button mat-fab extended>
+        <mat-icon>done_all</mat-icon>
+        Edit
+      </button>
+      <button mat-fab extended>
+        <mat-icon>done_all</mat-icon>
+        Save
+    </button>
+  </div>
+  }
+
+  @if (client.clientType === 'individual') {
+    <h1>Individual</h1>
+  }
 </form>

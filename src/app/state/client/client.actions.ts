@@ -33,3 +33,25 @@ export class UpdateIndividualTrainingStatus {
         public status: string
     ) {}
 }
+
+export class SetSearchFilter {
+    static readonly type = '[Client] Set Search Filter';
+    constructor(public search: string) {}
+}
+
+export class SetStatusFilter {
+    static readonly type = '[Client] Set Status Filter';
+    constructor(public status: {
+        active: boolean;
+        expired: boolean;
+        expiringSoon: boolean;
+    }) {}
+}
+
+export class UpdatePagination {
+    static readonly type = '[Client] Update Pagination';
+    constructor(public config: {
+        pageSize: number;
+        currentPage: number;
+    }) {}
+}

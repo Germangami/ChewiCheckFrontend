@@ -9,7 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { Client } from '../../../shared/Model/ClientModel/client-model';
-import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription, takeUntil } from 'rxjs';
+import { Store } from '@ngxs/store';
+import { SetSearchFilter, SetStatusFilter } from '../../../state/client/client.actions';
 
 @Component({
   selector: 'app-client-filter',
@@ -30,72 +32,50 @@ import { Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientFilterComponent implements OnInit, OnDestroy {
-  @Input() clients: Client[] = [];
-  @Output() filteredClients = new EventEmitter<Client[]>();
-  
-  formGroup: FormGroup;
-  searchValue: string = '';
-  subscription = new Subscription();
 
-  constructor(private fb: FormBuilder) {}
+  private destroy$ = new Subject<void>();
+  filterForm: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    private store: Store
+  ) {
+    this.filterForm = this.fb.group({
+      search: [''],
+      active: [false],
+      expired: [false],
+      expiringSoon: [false]
+    });
+  }
 
   ngOnInit() {
-    this.initFormGroup();
-    this.subscription.add(this.formGroupChanges());
+    this.setupFormListeners();
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  initFormGroup() {
-    this.formGroup = this.fb.group({
-      active: [false],
-      expired: [false],
-      expiringSoon: [false],
-    });
-  }
-
-  formGroupChanges() {
-    return this.formGroup.valueChanges.subscribe(() => this.applyFilters());
-  }
-
-  onFilterChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.searchValue = input.value.toLowerCase();
-    this.applyFilters();
-  }
-
-  isExpiringSoon(client: Client): boolean {
-    if (!client.groupTraining.endDate) return false;
-    const currentDate = new Date();
-    const endDate = new Date(client.groupTraining.endDate);
-    const daysUntilExpiration = Math.floor((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
-    return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
-  }
-
-  private applyFilters() {
-    const filteredClients = this.clients.filter(client => {
-      const firstName = client.first_name?.toLowerCase() || '';
-      const nickname = client.nickname?.toLowerCase() || '';
-      const matchesSearch = !this.searchValue || 
-          firstName.includes(this.searchValue) || 
-          nickname.includes(this.searchValue);
-
-      if (!matchesSearch) return false;
-
-      const { active, expired, expiringSoon } = this.formGroup.value;
-      const noFiltersSelected = !active && !expired && !expiringSoon;
-
-      if (noFiltersSelected) return true;
-
-      return (
-          (active && client.groupTraining.isActive) ||
-          (expired && !client.groupTraining.isActive) ||
-          (expiringSoon && this.isExpiringSoon(client))
-      );
+  private setupFormListeners() {
+    // Search with debounce
+    this.filterForm.get('search')?.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(search => {
+      this.store.dispatch(new SetSearchFilter(search?.toString() || ''));
     });
 
-    this.filteredClients.emit(filteredClients);
+    // Status filters
+    this.filterForm.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(filters => {
+      this.store.dispatch(new SetStatusFilter({
+        active: !!filters.active,
+        expired: !!filters.expired,
+        expiringSoon: !!filters.expiringSoon
+      }));
+    });
   }
 }

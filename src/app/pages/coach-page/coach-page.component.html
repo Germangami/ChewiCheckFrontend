@@ -1,23 +1,28 @@
-@if (clients$ | async; as clients) {
-    <app-client-filter 
-        [clients]="clients"
-        (filteredClients)="onFilteredClientsChange($event)"/>
-
-    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
-        <mat-tab label="Group">
-            <div class="mb-05"></div>
-            <app-group-clients [clients]="paginatedClients"/>
-        </mat-tab>
-        <mat-tab label="Individual">
-            <div class="mb-1"></div>
-            <app-individual-clients/>
-        </mat-tab>
+@if (vm$ | async; as vm) {
+  @if (vm.groupClients && vm.individualClients) {
+    <app-client-filter/>
+  
+    <mat-tab-group>
+      <mat-tab label="Group">
+        <app-group-clients 
+          [clients]="vm.groupClients | slice: 
+            vm.pagination.currentPage * vm.pagination.pageSize : 
+            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
+      </mat-tab>
+      
+      <mat-tab label="Individual">
+        <app-individual-clients 
+          [clients]="vm.individualClients | slice: 
+            vm.pagination.currentPage * vm.pagination.pageSize : 
+            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
+      </mat-tab>
     </mat-tab-group>
-
+  
     <mat-paginator
-        [length]="pageConfig.filteredLength"
-        [pageSize]="pageConfig.pageSize"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onPageChange($event)">
-    </mat-paginator>
+      [length]="(vm.groupClients.length + vm.individualClients.length)"
+      [pageSize]="vm.pagination.pageSize"
+      [pageIndex]="vm.pagination.currentPage"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"/>
+  }
 }
