@@ -3,17 +3,17 @@
         <!-- Добавляем проверку на существование groupTraining -->
         @if (currentCLient?.groupTraining) {
             <div class="grid-training-info mb-1">
-                <span class="grid-training-info__label">Start date</span>
-                <span class="grid-training-info__label">End date</span>
-                <span>{{currentCLient.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
-                <span>{{currentCLient.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
+                <span>Start date</span>
+                <span>End date</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
             </div>
 
             <div class="grid-training-info mb-1">
-                <span class="grid-training-info__label">Total trainings</span>
-                <span class="grid-training-info__label">Remaining trainings</span>
-                <span>{{currentCLient.groupTraining.totalTrainings}}</span>
-                <span>{{currentCLient.groupTraining.remainingTrainings}}</span>
+                <span>Total trainings</span>
+                <span>Remaining trainings</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining.totalTrainings}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining.remainingTrainings}}</span>
             </div>
 
             <div class="button-container">          

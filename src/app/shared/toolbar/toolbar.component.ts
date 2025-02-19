@@ -16,6 +16,9 @@ import { Client } from '../Model/ClientModel/client-model';
 export class ToolbarComponent {
 
   @Input()
+  config?: any;
+
+  @Input()
   tgId: number;
 
   currentClient: Client;

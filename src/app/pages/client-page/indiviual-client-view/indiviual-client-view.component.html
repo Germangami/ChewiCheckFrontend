@@ -1,0 +1,47 @@
+@if (currentCLient) {
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
+        <mat-tab label="Client Info">
+            <mat-card appearance="outlined">
+                <mat-card-content>
+                    <form [formGroup]="formGroup">
+            
+                        <div class="form-field-container">
+                            
+                            <p>
+                                <mat-form-field appearance="outline">
+                                  <mat-label>Provide note</mat-label>
+                                  <textarea matInput formControlName="note"
+                                            [readonly]="true">
+                                  </textarea>
+                                  <mat-icon matSuffix>message</mat-icon>
+                                </mat-form-field>
+                            </p>
+                            
+                            <div>
+                                <p><span class="form-field-container__client-info">Full Name:</span> {{currentCLient.first_name}} {{currentCLient.last_name}}</p>
+                                <p><span class="form-field-container__client-info">Nickname:</span> {{currentCLient.nickname}}</p>
+                            </div>
+                        </div>
+        
+                        <div>
+                            <ul>
+                                @for (session of mockTrainingSessions; track $index) {
+                                    <li>
+                                        {{ session.date }} at {{ session.time }}
+                                    </li>
+                                }
+                              </ul>
+                        </div>
+                    
+                    </form>
+            
+                </mat-card-content>
+            </mat-card>
+        </mat-tab>
+        <mat-tab label="Schedule">
+            <app-training-scheduler/>
+        </mat-tab>
+        <mat-tab label="Third">Content 3</mat-tab>
+      </mat-tab-group>
+
+}

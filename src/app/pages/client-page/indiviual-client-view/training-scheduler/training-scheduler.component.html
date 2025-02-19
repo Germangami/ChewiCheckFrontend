@@ -1,0 +1,42 @@
+<mat-card class="demo-inline-calendar-card">
+  <mat-calendar [(selected)]="selected"></mat-calendar>
+</mat-card>
+<p>Selected date: {{getFormattedDate()}}</p>
+
+<h1>PRIVET</h1>
+
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <!-- <mat-form-field>
+      <mat-label>Select time</mat-label>
+      <mat-select [(ngModel)]="selectedTime">
+        <mat-option>None</mat-option>
+        @for (slot of freeSlots; track slot) {
+          <mat-option [value]="slot">{{slot}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field> -->
+
+    <mat-form-field>
+      <mat-label>Select time</mat-label>
+      <mat-select [(ngModel)]="selectedTime">
+        <mat-option>None</mat-option>
+        @for (slot of freeSlots; track slot) {
+          <mat-option [value]="slot">{{slot}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" 
+      [disabled]="!selectedTime"
+      (click)="bookSlot()">
+      Book Slot
+    </button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card appearance="outlined">
+  <mat-card-content>
+    ТВОИ ЗАНЯТИЯ
+  </mat-card-content>
+</mat-card>

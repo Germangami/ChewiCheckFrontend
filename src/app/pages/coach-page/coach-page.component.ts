@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
 import { Client, ClientType } from '../../shared/Model/ClientModel/client-model';
 import { CommonModule } from '@angular/common';
-import { combineLatest, map, Observable, startWith, Subscription } from 'rxjs';
+import { combineLatest, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { ClientSelectors } from '../../state/client/client.selectors';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -19,10 +19,22 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { GroupClientsComponent } from './group-clients/group-clients.component';
 import { IndividualClientsComponent } from './individual-clients/individual-clients.component';
 import { ClientFilterComponent } from './client-filter/client-filter.component';
+import { Trainer } from '../../shared/Model/TrainerModel/trainer-model';
+import { ApiService } from '../../shared/services/api.service';
+import { ScheduleSettingsComponent } from './schedule-settings/schedule-settings.component';
+import { GetTrainer } from '../../state/trainer/trainer.actions';
+import { TrainerSelectors } from '../../state/trainer/trainer.selectors';
 
 export interface PaginationConfig {
   pageSize: number;
   currentPage: number;
+}
+
+export interface CoachViewModel {
+    trainer: Trainer | null;
+    groupClients: Client[];
+    individualClients: Client[];
+    pagination: PaginationConfig;
 }
 
 @Component({
@@ -48,50 +60,63 @@ export interface PaginationConfig {
       MatTabsModule,
       GroupClientsComponent,
       IndividualClientsComponent,
-      ClientFilterComponent
+      ClientFilterComponent,
+      ScheduleSettingsComponent
     ]
 })
 export class CoachPageComponent {
+    vm$: Observable<CoachViewModel>;
+    pageSizeOptions = [5, 10, 25, 100];
+    trackById: TrackByFunction<Client> = (_, client) => client._id;
 
-   // Переместите инициализацию vm$ в конструктор
-   vm$: Observable<{
-    groupClients: Client[];
-    individualClients: Client[];
-    pagination: PaginationConfig;
-  }>;
+    currentTrainer: Trainer | null = null;
 
-  pageSizeOptions = [5, 10, 25, 100];
-  trackById: TrackByFunction<Client> = (_, client) => client._id;
+    constructor(
+        private store: Store,
+        private apiService: ApiService
+    ) { }
 
-  constructor(private store: Store) {
-    // Инициализируйте vm$ после получения store
-    this.vm$ = combineLatest([
-      this.store.select(ClientSelectors.getFilteredClients).pipe(
-          startWith([]) // Защита от undefined
-      ),
-      this.store.select(ClientSelectors.getPaginationConfig).pipe(
-          startWith({ pageSize: 10, currentPage: 0 })
-      )
-  ]).pipe(
-      map(([filteredClients, pagination]) => ({
-          groupClients: this.filterByType(filteredClients, ClientType.GROUP),
-          individualClients: this.filterByType(filteredClients, ClientType.INDIVIDUAL),
-          pagination
-      }))
-  );
+    ngOnInit(): void {
+        const tgId = 469408413;
+        this.store.dispatch(new GetTrainer(tgId));
+        this.store.dispatch(new GetAllClients());
+        this.getVm();
+    }
 
-    this.store.dispatch(new GetAllClients());
-  }
+    onPageChange(event: PageEvent): void {
+        this.store.dispatch(new UpdatePagination({
+            pageSize: event.pageSize,
+            currentPage: event.pageIndex
+        }));
+    }
 
-  // Остальной код без изменений
-  onPageChange(event: PageEvent): void {
-    this.store.dispatch(new UpdatePagination({
-      pageSize: event.pageSize,
-      currentPage: event.pageIndex
-    }));
-  }
+    private getVm() {
+        // const tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id; 
+        const tgId = 469408413; 
+        this.vm$ = combineLatest([
+            this.store.select(TrainerSelectors.getTrainer).pipe(
+                startWith(null),
+                tap(currentTrainer => this.currentTrainer = currentTrainer)
+            ),
+            this.store.select(ClientSelectors.getFilteredClients).pipe(startWith([])),
+            this.store.select(ClientSelectors.getPaginationConfig).pipe(startWith({ pageSize: 10, currentPage: 0 }))
+        ]).pipe(
+            map(([trainer, clients, pagination]) => {
+                const trainerClients = clients.filter(client => 
+                    client.trainerId === trainer?.tgId
+                );
 
-  private filterByType(clients: Client[], type: ClientType): Client[] {
-    return clients.filter(client => client.clientType === type);
-  }
+                return {
+                    trainer,
+                    groupClients: this.filterByType(trainerClients, ClientType.GROUP),
+                    individualClients: this.filterByType(trainerClients, ClientType.INDIVIDUAL),
+                    pagination
+                };
+            })
+        );
+    }
+
+    private filterByType(clients: Client[], type: ClientType): Client[] {
+        return clients.filter(client => client.clientType === type);
+    }
 }

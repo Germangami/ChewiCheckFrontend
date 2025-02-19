@@ -25,7 +25,11 @@ export interface GroupTraining {
 }
 
 export interface IndividualTraining {
-    scheduledSessions?: ScheduledSession[];
+    scheduledSessions: Array<{
+        date: string;
+        time: string;
+        status: 'planned' | 'completed' | 'missed';
+    }>;
     pricePerSession?: number;
     preferredDays?: string[];
     preferredTime?: string;

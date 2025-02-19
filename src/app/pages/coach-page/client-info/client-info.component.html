@@ -1,67 +1,3 @@
-<!-- <form [formGroup]="formGroup">
-
-  <div class="form-field-container">
-
-    @if (client?.groupTraining?.aboniment) {
-      <p>
-        <mat-form-field appearance="outline">
-          <mat-label>Provide note</mat-label>
-          <textarea matInput formControlName="note"
-                    [readonly]="!isClientDataEdit">
-          </textarea>
-          <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
-        </mat-form-field>
-      </p>
-  
-      <p>
-        <mat-form-field appearance="outline">
-          <mat-label>Nickname</mat-label>
-          <input matInput placeholder="Provide nickname"
-            formControlName="nickname"
-            [readonly]="!isClientDataEdit">
-          <mat-icon matSuffix>{{isClientDataEdit ? 'lock_open' : 'lock'}}</mat-icon>
-        </mat-form-field>
-      </p>
-  
-      <div>
-        <span>{{(formGroup.get('startDate').value | date:'dd.MM.yyyy') || 'Date not specified'}} - {{formGroup.get('endDate').value | date:'dd.MM.yyyy'}}</span>
-      </div>
-  
-      <p>
-        <mat-form-field appearance="outline" [style.width.px]=150>
-          <mat-label>Total trainings</mat-label>
-          <input matInput placeholder="Provide last name"
-            formControlName="totalTrainings"
-            [readonly]="!isClientDataEdit">
-          <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" [style.width.px]=150>
-          <mat-label>Remaining trainings</mat-label>
-          <input matInput placeholder="Provide last name"
-            formControlName="remainingTrainings"
-            [readonly]="!isClientDataEdit">
-          <mat-icon matSuffix>{{isClientDataEdit ? 'edit' : 'sentiment_very_satisfied'}}</mat-icon>
-        </mat-form-field>
-      </p>
-
-      <div class="button-container">
-        <button mat-fab extended (click)="editClientData()">
-          <mat-icon>edit</mat-icon>
-          Edit
-        </button>
-  
-        <button mat-fab extended (click)="saveClientData()"
-          [disabled]="!isClientDataEdit">
-          <mat-icon>done_all</mat-icon>
-          Save
-        </button>
-    </div>
-    } 
-  </div>  
-
-</form> -->
-
 <form [formGroup]="formGroup">
   <div class="form-field-container mb-1">
     <mat-form-field appearance="outline">
@@ -81,33 +17,89 @@
   </div>
 
   @if (client.clientType === 'group') {
+
+    @if (client.groupTraining.isActive) {
+      <div class="grid-training-info mb-1">
+        <span>Start date</span>
+        <span>End date</span>
+        <span class="grid-training-info__label">{{client.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
+        <span class="grid-training-info__label">{{client.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
+    </div>
+  
     <div class="grid-training-info mb-1">
-      <span>Start date</span>
-      <span>End date</span>
-      <span class="grid-training-info__label">{{client.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
-      <span class="grid-training-info__label">{{client.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
-  </div>
-
-  <div class="grid-training-info mb-1">
-      <span>Total trainings</span>
-      <span>Remaining trainings</span>
-      <span class="grid-training-info__label">{{client.groupTraining.totalTrainings}}</span>
-      <span class="grid-training-info__label">{{client.groupTraining.remainingTrainings}}</span>
-  </div>
-
-  <div class="button-container">          
-      <button mat-fab extended>
-        <mat-icon>done_all</mat-icon>
-        Edit
+        <span>Total trainings</span>
+        <span>Remaining trainings</span>
+        <span class="grid-training-info__label">{{client.groupTraining.totalTrainings}}</span>
+        <span class="grid-training-info__label">{{client.groupTraining.remainingTrainings}}</span>
+    </div>
+  
+    <div class="button-container">          
+        <button mat-fab extended (click)="editClientData()">
+          <mat-icon>done_all</mat-icon>
+          Edit
+        </button>
+        <button mat-fab extended 
+                (click)="saveClientData()"
+                [disabled]="!isClientDataEdit">
+          <mat-icon>done_all</mat-icon>
+          Save
       </button>
-      <button mat-fab extended>
-        <mat-icon>done_all</mat-icon>
-        Save
-    </button>
-  </div>
+    </div>
+    } @else {
+      <div class="form-field-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Select aboniment</mat-label>
+          <mat-select (selectionChange)="selectAboniment($event.value)">
+            @for (aboniment of aboniments; track aboniment) {
+              <mat-option [value]="aboniment.value">{{aboniment.label}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    }
   }
 
   @if (client.clientType === 'individual') {
-    <h1>Individual</h1>
+    <div class="individual-client">
+
+      <!-- Ближайшая тренировка -->
+      @if (getNextTraining()) {
+        <mat-card class="next-training-card mb-1">
+          <mat-card-content>
+            <p class="next-training-card__title mb-1">Next Training</p>
+            <div class="training-info">
+              <div class="training-date">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{getNextTraining().date}}</span>
+              </div>
+              <div class="training-time">
+                <mat-icon>schedule</mat-icon>
+                <span>{{getNextTraining().time}}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Статистика тренировок -->
+      <mat-card class="training-stats mb-1">
+        <mat-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Total Trainings: </span>
+              <span class="stat-value">{{client.individualTraining.scheduledSessions.length}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Scheduled: </span>
+              <span class="stat-value">{{getPlannedCount()}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Completed: </span>
+              <span class="stat-value">{{getCompletedCount()}}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
   }
 </form>

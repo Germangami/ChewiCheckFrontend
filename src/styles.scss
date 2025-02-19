@@ -29,10 +29,12 @@
     outlined-caret-color: var(--tg-theme-text-color),
     outlined-focus-outline-color: var(--tg-theme-text-color),
     outlined-focus-label-text-color: var(--tg-theme-text-color),
-    outlined-outline-color: var(--tg-theme-text-color),
     outlined-label-text-color: var(--tg-theme-text-color),
     outlined-input-text-color: var(--tg-theme-text-color),
     outlined-input-text-placeholder-color: var(--tg-theme-text-color),
+    outlined-hover-outline-color: var(--tg-theme-text-color),
+    outlined-hover-label-text-color: var(--tg-theme-text-color),
+    outlined-error-hover-label-text-color: red,
     outlined-outline-width: 1px
   ));
   @include mat.paginator-overrides((
@@ -60,14 +62,23 @@
   @include mat.icon-overrides((
     color: var(--tg-theme-text-color),
   ));
+  @include mat.datepicker-overrides((
+    calendar-container-shape: 'square',
+    calendar-date-selected-state-text-color: var(--tg-theme-text-color),
+    calendar-date-selected-state-background-color: var(--tg-theme-button-color),
+    calendar-date-hover-state-background-color: #90CAF9,
+    calendar-header-text-color: var(--tg-theme-text-color),
+    calendar-date-text-color: var(--tg-theme-text-color),
+    calendar-body-label-text-color: var(--tg-theme-text-color)
+  ));
 }
 
 
 html, body { height: 100%; }
 body { 
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
-  background: var(--tg-theme-bg-color); 
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
 }
 
@@ -143,4 +154,69 @@ a {
 
 .mb-2 {
   margin-bottom: 2rem;
+}
+
+/* Reset */
+*, 
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
+/* Remove list styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove default button styles */
+button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Remove text decoration from links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Make images responsive */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Basic typography reset */
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Form elements reset */
+input, 
+button, 
+textarea, 
+select {
+  font: inherit;
+}
+
+/* Remove outline on focused elements */
+:focus {
+  outline: 0;
+}
+
+/* Table reset */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }

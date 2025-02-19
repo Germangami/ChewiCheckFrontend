@@ -9,13 +9,20 @@ import { CurrentClientTraningsComponent } from './current-client-tranings/curren
 import { Store } from '@ngxs/store';
 import { ClientSelectors } from '../../state/client/client.selectors';
 import { ClientStatisticsComponent } from './client-statistics/client-statistics.component';
+import { IndiviualClientViewComponent } from './indiviual-client-view/indiviual-client-view.component';
+import { GetTrainer } from '../../state/trainer/trainer.actions';
 
 @Component({
     selector: 'app-client-page',
     templateUrl: './client-page.component.html',
     styleUrl: './client-page.component.scss',
     standalone: true,
-    imports: [CurrentClientViewComponent, CurrentClientTraningsComponent, ClientStatisticsComponent],
+    imports: [
+		CurrentClientViewComponent, 
+		CurrentClientTraningsComponent, 
+		ClientStatisticsComponent,
+		IndiviualClientViewComponent
+	],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientPageComponent implements OnInit, OnDestroy {
@@ -31,9 +38,9 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 							}
 
 	ngOnInit(): void {
-		console.log('ASDKJHAS DKJAS KJDAS DHKJAS DHKAJHS')
 		this.apiService.getCurrentClient(469408413).subscribe(response => {
 			console.log(response, 'CLIENT PAGE!');
+			this.store.dispatch(new GetTrainer(response.trainerId));
 		})
 		this.subscription.add(this.getRoute());
 		this.subscription.add(
@@ -58,6 +65,8 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 				}
 			})
 		);
+		const tgId = 469408413;
+		
 	}
 
 	ngOnDestroy(): void {

@@ -22,3 +22,53 @@
         font-weight: 600;
     }
 }
+
+.individual-client {
+    .next-training-card {
+        &__title {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+
+        &__header {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        mat-icon {
+            color: var(--tg-theme-button-color);
+        }
+
+        .training-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            mat-icon {
+                color: var(--tg-theme-button-color);
+            }
+
+            .training-date, .training-time {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+        }
+    }
+
+    .stats-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .stat-item {
+            display: flex;
+            gap: 0.5rem;
+
+            .stat-value {
+                font-weight: 600;
+            }
+        }
+    }
+}

@@ -1,0 +1,76 @@
+<div class="schedule-container">
+  <!-- Календарь слева -->
+  <div class="calendar-section">
+    <mat-card class="calendar-card">
+      <mat-calendar [(selected)]="selected"></mat-calendar>
+    </mat-card>
+  </div>
+
+  <!-- Информация о тренировках справа -->
+  <div class="trainings-section">
+    @if (selected()) {
+      <h2 class="date-header">{{formatDate(selected())}}</h2>
+
+      <!-- Тренировки на выбранный день -->
+      @if (getDaySchedule().length > 0) {
+        <div class="day-schedule mb-1">
+          <p class="section-title">Today's Schedule</p>
+          @for (session of getDaySchedule(); track session) {
+            <mat-card class="session-card">
+              <mat-card-content>
+                <div class="session-info">
+                  <div class="time">
+                    <mat-icon>schedule</mat-icon>
+                    <span>{{session.startTime}}</span>
+                  </div>
+                  <div class="client">
+                    <mat-icon>person</mat-icon>
+                    <span>{{session.client.first_name}} {{session.client.nickname}}</span>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      } @else {
+        <p class="no-sessions">No training sessions scheduled for this day</p>
+      }
+
+      <!-- Список всех клиентов с их тренировками -->
+      <div class="clients-overview">
+        <p class="section-title">Clients Overview</p>
+        <mat-accordion>
+          @for (client of getClientsWithSessions(); track client.tgId) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{client.first_name}} {{client.nickname}}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{getClientSessionsCount(client)}} sessions
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              @for (session of getClientSessions(client); track session) {
+                <div class="client-session" [class.completed]="session.status === 'completed'">
+                  <div class="session-date">
+                    <mat-icon>event</mat-icon>
+                    <span>{{session.date}}</span>
+                  </div>
+                  <div class="session-time">
+                    <mat-icon>schedule</mat-icon>
+                    <span>{{session.time}}</span>
+                  </div>
+                  <div class="session-status">
+                    <mat-icon>{{getStatusIcon(session.status)}}</mat-icon>
+                    <span>{{session.status}}</span>
+                  </div>
+                </div>
+              }
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      </div>
+    }
+  </div>
+</div>

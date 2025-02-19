@@ -1,28 +1,44 @@
 @if (vm$ | async; as vm) {
-  @if (vm.groupClients && vm.individualClients) {
-    <app-client-filter/>
-  
-    <mat-tab-group>
-      <mat-tab label="Group">
-        <app-group-clients 
-          [clients]="vm.groupClients | slice: 
-            vm.pagination.currentPage * vm.pagination.pageSize : 
-            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
-      </mat-tab>
-      
-      <mat-tab label="Individual">
-        <app-individual-clients 
-          [clients]="vm.individualClients | slice: 
-            vm.pagination.currentPage * vm.pagination.pageSize : 
-            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
-      </mat-tab>
-    </mat-tab-group>
-  
-    <mat-paginator
-      [length]="(vm.groupClients.length + vm.individualClients.length)"
-      [pageSize]="vm.pagination.pageSize"
-      [pageIndex]="vm.pagination.currentPage"
-      [pageSizeOptions]="pageSizeOptions"
-      (page)="onPageChange($event)"/>
-  }
+    @if (vm.trainer) {
+        <div class="trainer-info mb-2">
+            <h2>Welcome, {{ vm.trainer.first_name }} {{ vm.trainer.last_name }}</h2>
+        </div>
+
+        @if (vm.groupClients && vm.individualClients) {
+            <app-client-filter/>
+
+            <mat-tab-group>
+                <mat-tab label="Group">
+                    <app-group-clients 
+                        [clients]="vm.groupClients | slice: 
+                            vm.pagination.currentPage * vm.pagination.pageSize : 
+                            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
+                </mat-tab>
+                
+                <mat-tab label="Individual">
+                    <app-individual-clients 
+                        [clients]="vm.individualClients | slice: 
+                            vm.pagination.currentPage * vm.pagination.pageSize : 
+                            (vm.pagination.currentPage + 1) * vm.pagination.pageSize"/>
+                </mat-tab>
+
+                <mat-tab label="Schedule Settings">
+                    <app-schedule-settings [currentTrainer]="currentTrainer"/>
+                </mat-tab>
+            </mat-tab-group>
+
+            <mat-paginator
+                [length]="(vm.groupClients.length + vm.individualClients.length)"
+                [pageSize]="vm.pagination.pageSize"
+                [pageIndex]="vm.pagination.currentPage"
+                [pageSizeOptions]="pageSizeOptions"
+                (page)="onPageChange($event)"/>
+        }
+    } @else {
+        <!-- <mat-card> -->
+            <!-- <mat-card-content> -->
+                <p>Loading trainer data...</p>
+            <!-- </mat-card-content> -->
+        <!-- </mat-card> -->
+    }
 }
