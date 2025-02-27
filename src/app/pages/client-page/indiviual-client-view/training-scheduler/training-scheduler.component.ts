@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import moment from 'moment';
 import { TrainerSelectors } from '../../../../state/trainer/trainer.selectors';
 import { Client } from '../../../../shared/Model/ClientModel/client-model';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-training-scheduler',
@@ -30,6 +32,8 @@ import { Client } from '../../../../shared/Model/ClientModel/client-model';
     CommonModule,
     MatSelectModule,
     MatButtonModule,
+    MatTabsModule,
+    MatIconModule
   ],
   templateUrl: './training-scheduler.component.html',
   styleUrls: ['./training-scheduler.component.scss'],
@@ -115,16 +119,23 @@ export class TrainingSchedulerComponent {
     // }
   }
 
-  scheduleTraining() {
-    if (!this.selected() || !this.selectedTime) return;
+  getStatusIcon(status: string): string {
+    switch(status) {
+      case 'completed': return 'check_circle';
+      case 'planned': return 'schedule';
+      case 'missed': return 'cancel';
+      default: return 'help';
+    }
+  }
 
-    // Преобразуем дату в нужный формат
-    const date = moment(this.selected()).format('DD.MM.YYYY');
-
-    this.apiService.scheduleIndividualTraining(
-        '67a4ebdbe3b120a46831ce3c',
-        date,
-        this.selectedTime
-    ).subscribe(/* ... */);
+  getSelectedDaySessions() {
+    if (!this.selected() || !this.currentClient?.individualTraining?.scheduledSessions) return [];
+    
+    const selectedDate = moment(this.selected()).format('DD.MM.YYYY');
+    return this.currentClient.individualTraining.scheduledSessions
+      .filter(session => session.date === selectedDate)
+      .sort((a, b) => {
+        return a.time.localeCompare(b.time);
+      });
   }
 }

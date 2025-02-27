@@ -1,0 +1,37 @@
+.selected-date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    color: var(--tg-theme-button-color);
+  }
+}
+
+.session-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--tg-theme-hint-color);
+
+  &.completed {
+    border-left: 4px solid #4CAF50;
+  }
+
+  .session-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .time,
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      mat-icon {
+        color: var(--tg-theme-button-color);
+      }
+    }
+  }
+}

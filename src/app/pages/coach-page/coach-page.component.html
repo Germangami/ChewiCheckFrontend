@@ -1,9 +1,5 @@
 @if (vm$ | async; as vm) {
     @if (vm.trainer) {
-        <div class="trainer-info mb-2">
-            <h2>Welcome, {{ vm.trainer.first_name }} {{ vm.trainer.last_name }}</h2>
-        </div>
-
         @if (vm.groupClients && vm.individualClients) {
             <app-client-filter/>
 

@@ -35,42 +35,6 @@
       } @else {
         <p class="no-sessions">No training sessions scheduled for this day</p>
       }
-
-      <!-- Список всех клиентов с их тренировками -->
-      <div class="clients-overview">
-        <p class="section-title">Clients Overview</p>
-        <mat-accordion>
-          @for (client of getClientsWithSessions(); track client.tgId) {
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  {{client.first_name}} {{client.nickname}}
-                </mat-panel-title>
-                <mat-panel-description>
-                  {{getClientSessionsCount(client)}} sessions
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-
-              @for (session of getClientSessions(client); track session) {
-                <div class="client-session" [class.completed]="session.status === 'completed'">
-                  <div class="session-date">
-                    <mat-icon>event</mat-icon>
-                    <span>{{session.date}}</span>
-                  </div>
-                  <div class="session-time">
-                    <mat-icon>schedule</mat-icon>
-                    <span>{{session.time}}</span>
-                  </div>
-                  <div class="session-status">
-                    <mat-icon>{{getStatusIcon(session.status)}}</mat-icon>
-                    <span>{{session.status}}</span>
-                  </div>
-                </div>
-              }
-            </mat-expansion-panel>
-          }
-        </mat-accordion>
-      </div>
     }
   </div>
 </div>
