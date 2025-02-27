@@ -44,7 +44,6 @@ export class ScheduleSettingsComponent {
   }
 
   ngOnInit() {
-    console.log(this.currentTrainer, 'CURRENT TRAINER');
   }
 
   formatDate(date: Date): string {

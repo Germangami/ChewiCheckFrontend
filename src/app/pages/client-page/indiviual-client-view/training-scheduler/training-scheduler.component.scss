@@ -35,3 +35,73 @@
     }
   }
 }
+
+.demo-inline-calendar-card {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.trainings-section {
+  padding: 1rem;
+  
+  .date-header {
+    color: var(--tg-theme-button-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .section-title {
+    font-weight: 500;
+    color: var(--tg-theme-button-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .session-card {
+    margin-bottom: 0.5rem;
+    background-color: var(--tg-theme-bg-color);
+    
+    &.completed {
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .session-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .time,
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        mat-icon {
+          color: var(--tg-theme-button-color);
+        }
+      }
+    }
+  }
+  
+  .no-sessions {
+    color: var(--tg-theme-hint-color);
+    font-style: italic;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    
+    mat-form-field {
+      width: 100%;
+    }
+    
+    button {
+      align-self: center;
+    }
+  }
+}

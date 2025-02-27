@@ -60,6 +60,9 @@ export class TrainingSchedulerComponent {
         console.log(formattedDate, '3333333');
         // Запрашиваем доступные слоты
         this.store.dispatch(new GetAvailableSlots(469408413, formattedDate));
+        
+        // Принудительно вызываем обновление представления
+        this.cdr.markForCheck();
       }
     });
   }
@@ -69,7 +72,17 @@ export class TrainingSchedulerComponent {
     this.availableSlots$.subscribe(slots => {
       console.log(slots, '1111111');
       this.freeSlots = slots;
+      this.cdr.markForCheck();
     });
+    
+    // Debug log to check if currentClient is received
+    console.log('Initial currentClient:', this.currentClient);
+  }
+
+  ngOnChanges() {
+    // Проверяем изменения входных параметров
+    console.log('ngOnChanges - currentClient:', this.currentClient);
+    this.cdr.markForCheck();
   }
 
   getFormattedDate(): string {
@@ -88,35 +101,53 @@ export class TrainingSchedulerComponent {
   }
 
   bookSlot() {
-    if (!this.selected() || !this.selectedTime) return;
+    if (!this.selected() || !this.selectedTime || !this.currentClient) {
+      console.log('Cannot book slot: missing data', {
+        selected: !!this.selected(),
+        selectedTime: this.selectedTime,
+        currentClient: !!this.currentClient
+      });
+      return;
+    }
     
     const date = moment(this.selected()).format('DD.MM.YYYY');
+    
+    // Используем данные текущего клиента вместо мокованных
+    const clientData = {
+      tgId: this.currentClient.tgId,
+      first_name: this.currentClient.first_name,
+      nickname: this.currentClient.nickname || ''
+    };
 
-    const currentClient = {
-      tgId: 469408413,
-      first_name: 'Hero',
-      nickname: 'NickName-Hero'
-    }
+    console.log('Booking slot for client:', clientData);
 
     // Бронируем у тренера
     this.store.dispatch(new BookTimeSlot(
-        469408413,
-        currentClient,
+        469408413, // TODO: заменить на динамическое получение ID тренера
+        clientData,
         date,
         this.selectedTime
     ));
 
     // Сохраняем у клиента
-    // if (this.currentClient?._id) {
+    if (this.currentClient._id) {
         this.apiService.scheduleIndividualTraining(
-            // this.currentClient._id,
-            '67a4ebdbe3b120a46831ce3c',
+            this.currentClient._id,
             date,
             this.selectedTime
         ).subscribe(updatedClient => {
             console.log('Training scheduled for client:', updatedClient);
+            
+            // Обновляем данные клиента после успешного бронирования
+            if (updatedClient) {
+                this.currentClient = updatedClient;
+                this.selectedTime = '';
+                this.cdr.markForCheck();
+            }
         });
-    // }
+    } else {
+        console.error('Cannot schedule training: client ID is missing');
+    }
   }
 
   getStatusIcon(status: string): string {
@@ -129,13 +160,26 @@ export class TrainingSchedulerComponent {
   }
 
   getSelectedDaySessions() {
-    if (!this.selected() || !this.currentClient?.individualTraining?.scheduledSessions) return [];
+    if (!this.selected() || !this.currentClient?.individualTraining?.scheduledSessions) {
+      console.log('No data available:', {
+        selected: this.selected(),
+        currentClient: !!this.currentClient,
+        hasIndividualTraining: !!this.currentClient?.individualTraining,
+        hasScheduledSessions: !!this.currentClient?.individualTraining?.scheduledSessions
+      });
+      return [];
+    }
     
     const selectedDate = moment(this.selected()).format('DD.MM.YYYY');
-    return this.currentClient.individualTraining.scheduledSessions
+    console.log('Looking for sessions on:', selectedDate);
+    console.log('Available sessions:', this.currentClient.individualTraining.scheduledSessions);
+    
+    const sessions = this.currentClient.individualTraining.scheduledSessions
       .filter(session => session.date === selectedDate)
-      .sort((a, b) => {
-        return a.time.localeCompare(b.time);
-      });
+      .sort((a, b) => a.time.localeCompare(b.time));
+    
+    console.log('Found sessions:', sessions);
+    this.cdr.markForCheck();
+    return sessions;
   }
 }

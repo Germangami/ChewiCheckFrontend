@@ -44,7 +44,6 @@ export class ClientInfoComponent implements OnInit {
     if (client) {
       this.initFormGroup(client);
       this.client = client;
-      console.log(this.client, 'INFO CLIENT 123');
       this.cdr.detectChanges();
     }
   }
@@ -86,7 +85,6 @@ export class ClientInfoComponent implements OnInit {
   }
 
   selectAboniment(aboniment: number) {
-    console.log(aboniment, this.client._id, 'ID');
     this.store.dispatch(new SelectClientAboniment(aboniment, this.client._id));
   }
 

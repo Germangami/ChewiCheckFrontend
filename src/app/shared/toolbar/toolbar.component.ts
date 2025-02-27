@@ -29,7 +29,6 @@ export class ToolbarComponent {
   }
 
   ngOnInit() {
-    console.log(this.tgId, 'CHECK TG ID')
     if(this.tgId) {
       this.apiService.getCurrentClient(this.tgId).subscribe(client => {
         this.currentClient = client;

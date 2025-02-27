@@ -64,7 +64,6 @@ export class ApiService {
 
   getAvailableSlots(trainerId: number, date: string): Observable<AvailableSlot[]> {
     const url = `${this.trainerEndpoint}/slots/${trainerId}/${date}`;
-    console.log('Requesting slots with URL:', url);
     return this.http.get<AvailableSlot[]>(url);
   }
 

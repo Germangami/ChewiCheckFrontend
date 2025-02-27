@@ -2,15 +2,19 @@
   <mat-calendar [(selected)]="selected"></mat-calendar>
 </mat-card>
 
-<mat-card appearance="outlined">
-  <mat-card-content>
-    @if (selected()) {
-      <div class="selected-date-info">
-        <h3>{{getFormattedDate()}}</h3>
-        
-        @if (getSelectedDaySessions().length > 0) {
-          @for (session of getSelectedDaySessions(); track session) {
-            <div class="session-item" [class.completed]="session.status === 'completed'">
+<h1>{{currentClient?.first_name}}</h1>
+
+<div class="trainings-section">
+  @if (selected()) {
+    <h2 class="date-header">{{getFormattedDate()}}</h2>
+
+    <!-- Тренировки на выбранный день -->
+    @if (getSelectedDaySessions().length > 0) {
+      <div class="day-schedule">
+        <p class="section-title">Your Training Sessions</p>
+        @for (session of getSelectedDaySessions(); track session) {
+          <mat-card class="session-card">
+            <mat-card-content>
               <div class="session-info">
                 <div class="time">
                   <mat-icon>schedule</mat-icon>
@@ -21,32 +25,30 @@
                   <span>{{session.status}}</span>
                 </div>
               </div>
-            </div>
-          }
-        } @else {
-          <mat-form-field>
-            <mat-label>Select time</mat-label>
-            <mat-select [(ngModel)]="selectedTime">
-              <mat-option>None</mat-option>
-              @for (slot of freeSlots; track slot) {
-                <mat-option [value]="slot">{{slot}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <!-- <button mat-raised-button color="primary" 
-            [disabled]="!selectedTime"
-            (click)="bookSlot()">
-            Book Slot
-          </button> -->
-
-          <button mat-fab extended [disabled]="!selectedTime"
-          (click)="bookSlot()">
-            <mat-icon>done_all</mat-icon>
-            Book Slot
-          </button>
+            </mat-card-content>
+          </mat-card>
         }
       </div>
+    } @else {
+      <p class="no-sessions">No training sessions scheduled for this day</p>
+      
+      <div class="booking-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Select time</mat-label>
+          <mat-select [(ngModel)]="selectedTime">
+            <mat-option>None</mat-option>
+            @for (slot of freeSlots; track slot) {
+              <mat-option [value]="slot">{{slot}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-fab extended [disabled]="!selectedTime"
+          (click)="bookSlot()">
+          <mat-icon>done_all</mat-icon>
+          Book Session
+        </button>
+      </div>
     }
-  </mat-card-content>
-</mat-card>
+  }
+</div>

@@ -39,18 +39,15 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.apiService.getCurrentClient(469408413).subscribe(response => {
-			console.log(response, 'CLIENT PAGE!');
 			this.store.dispatch(new GetTrainer(response.trainerId));
 		})
 		this.subscription.add(this.getRoute());
 		this.subscription.add(
 			this.store.select(ClientSelectors.getUsers).subscribe(clients => {
-				console.log(clients, 'CLIENTS');
 				if (this.currentClient) {
 					const updatedClient = clients.find(c => c._id === this.currentClient._id);
 					if (updatedClient) {
 						this.currentClient = updatedClient;
-						console.log(this.currentClient, 'CURRENT CLIENT');
 						this.cdr.detectChanges();
 					}
 				}
@@ -58,7 +55,6 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 		);
 		this.subscription.add(
 			this.webSocketService.onClientUpdated().subscribe((updatedClient: Client) => {
-				console.log(updatedClient, 'UPDATE CLIENT CLIENT-PAGE');
 				if (updatedClient._id === this.currentClient._id) {
 					this.currentClient = {...updatedClient};
 					this.cdr.detectChanges();
@@ -78,7 +74,6 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 		if (tgId) {
 				return this.apiService.getCurrentClient(tgId).subscribe({
 						next: (response) => {
-								console.log('Received client:', response);
 								this.currentClient = response;
 								this.cdr.detectChanges();
 						},

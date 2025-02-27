@@ -100,7 +100,6 @@ export class TrainerState {
 
   @Action(BookTimeSlot)
   bookTimeSlot(ctx: StateContext<TrainerStateModel>, action: BookTimeSlot) {
-    console.log(action, 'action12312312');
     return this.apiService.bookTimeSlot(
       action.trainerId, 
       action.client, 

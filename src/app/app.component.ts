@@ -111,8 +111,7 @@ export class AppComponent implements OnInit {
   }
 
   particlesLoaded(container: any): void {
-    console.log(container);
-}
+  }
 
   initTelegramWebApp() {
     if (window.Telegram.WebApp) {
