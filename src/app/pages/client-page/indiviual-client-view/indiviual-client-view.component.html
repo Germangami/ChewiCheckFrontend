@@ -6,7 +6,6 @@
                     <form [formGroup]="formGroup">
             
                         <div class="form-field-container">
-                            
                             <p>
                                 <mat-form-field appearance="outline">
                                   <mat-label>Provide note</mat-label>
@@ -22,17 +21,6 @@
                                 <p><span class="form-field-container__client-info">Nickname:</span> {{currentCLient.nickname}}</p>
                             </div>
                         </div>
-        
-                        <div>
-                            <ul>
-                                @for (session of mockTrainingSessions; track $index) {
-                                    <li>
-                                        {{ session.date }} at {{ session.time }}
-                                    </li>
-                                }
-                              </ul>
-                        </div>
-                    
                     </form>
             
                 </mat-card-content>
@@ -41,7 +29,6 @@
         <mat-tab label="Schedule">
             <app-training-scheduler/>
         </mat-tab>
-        <mat-tab label="Third">Content 3</mat-tab>
       </mat-tab-group>
 
 }

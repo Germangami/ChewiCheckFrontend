@@ -51,17 +51,10 @@ export class TrainingSchedulerComponent {
     private store: Store, 
     private apiService: ApiService
   ) {
-    // Подписываемся на изменение даты
     this.selected.subscribe(date => {
       if (date) {
-        console.log(date, '2222222');
-        // Форматируем дату в нужный формат DD.MM.YYYY
         const formattedDate = moment(date).format('DD.MM.YYYY');
-        console.log(formattedDate, '3333333');
-        // Запрашиваем доступные слоты
-        this.store.dispatch(new GetAvailableSlots(469408413, formattedDate));
-        
-        // Принудительно вызываем обновление представления
+        this.store.dispatch(new GetAvailableSlots(469408413, formattedDate));        
         this.cdr.markForCheck();
       }
     });
@@ -70,18 +63,12 @@ export class TrainingSchedulerComponent {
   ngOnInit() {
     this.availableSlots$ = this.store.select(TrainerSelectors.getAvailableSlots);
     this.availableSlots$.subscribe(slots => {
-      console.log(slots, '1111111');
       this.freeSlots = slots;
       this.cdr.markForCheck();
     });
-    
-    // Debug log to check if currentClient is received
-    console.log('Initial currentClient:', this.currentClient);
   }
 
   ngOnChanges() {
-    // Проверяем изменения входных параметров
-    console.log('ngOnChanges - currentClient:', this.currentClient);
     this.cdr.markForCheck();
   }
 
@@ -91,7 +78,6 @@ export class TrainingSchedulerComponent {
   }
 
   getTrainerSchedule(date: Date) {
-    // Здесь будет логика получения расписания тренера на выбранную дату
     console.log('Getting schedule for:', moment(date).format('DD.MM.YYYY'));
   }
 
@@ -171,14 +157,10 @@ export class TrainingSchedulerComponent {
     }
     
     const selectedDate = moment(this.selected()).format('DD.MM.YYYY');
-    console.log('Looking for sessions on:', selectedDate);
-    console.log('Available sessions:', this.currentClient.individualTraining.scheduledSessions);
-    
     const sessions = this.currentClient.individualTraining.scheduledSessions
       .filter(session => session.date === selectedDate)
       .sort((a, b) => a.time.localeCompare(b.time));
     
-    console.log('Found sessions:', sessions);
     this.cdr.markForCheck();
     return sessions;
   }

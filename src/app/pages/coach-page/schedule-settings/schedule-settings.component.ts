@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, model } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +12,10 @@ import { Trainer } from '../../../shared/Model/TrainerModel/trainer-model';
 import { MatIconModule } from '@angular/material/icon';
 import moment from 'moment';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { CommonModule } from '@angular/common';
+import { Store } from '@ngxs/store';
+import { TrainerSelectors } from '../../../state/trainer/trainer.selectors';
+import { GetTrainer } from '../../../state/trainer/trainer.actions';
 
 @Component({
   selector: 'app-schedule-settings',
@@ -20,6 +24,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
   providers: [provideNativeDateAdapter()],
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -39,11 +44,30 @@ export class ScheduleSettingsComponent {
 
   selected = model<Date | null>(null);
   
-  constructor() {
-
+  constructor(private store: Store, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
+    // Если компонент используется как отдельная страница, загружаем данные тренера
+    if (!this.currentTrainer) {
+      this.loadTrainerData();
+    }
+  }
+  
+  private loadTrainerData() {
+    // ID тренера можно получить из хранилища или из сервиса
+    const trainerId = 469408413; // Заменить на динамическое получение ID
+    
+    // Dispatch action to load trainer data
+    this.store.dispatch(new GetTrainer(trainerId));
+    
+    // Subscribe to trainer data
+    this.store.select(TrainerSelectors.getTrainer).subscribe(trainer => {
+      if (trainer) {
+        this.currentTrainer = trainer;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   formatDate(date: Date): string {

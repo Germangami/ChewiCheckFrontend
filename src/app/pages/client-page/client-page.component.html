@@ -2,7 +2,7 @@
     <app-indiviual-client-view [getCurrentClient]="currentClient"></app-indiviual-client-view>
 }
 
-@if(currentClient?.clientType === 'group') {
+@if (currentClient?.clientType === 'group') {
     <div class="mb-2">
         <app-current-client-view [getCurrentClient]="currentClient"/>
     </div>
@@ -13,3 +13,5 @@
         <app-client-statistics></app-client-statistics>
     </div>
 }
+
+<app-toolbar></app-toolbar>

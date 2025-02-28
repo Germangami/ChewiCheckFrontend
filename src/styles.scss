@@ -56,6 +56,9 @@
     disabled-state-container-color: gray,
     disabled-state-foreground-color: white
   ));
+  @include mat.icon-button-overrides((
+    icon-color: var(--tg-theme-button-color),
+  ));
   @include mat.toolbar-overrides((
     container-background-color: var(--tg-theme-secondary-bg-color),
   ));
@@ -66,10 +69,17 @@
     calendar-container-shape: 'square',
     calendar-date-selected-state-text-color: var(--tg-theme-text-color),
     calendar-date-selected-state-background-color: var(--tg-theme-button-color),
+    calendar-date-today-selected-state-outline-color: var(--tg-theme-button-color),
+    calendar-date-focus-state-background-color: var(--tg-theme-button-color),
     calendar-date-hover-state-background-color: #90CAF9,
-    calendar-header-text-color: var(--tg-theme-text-color),
+    // toggle-active-state-icon-color: green,
+    calendar-body-label-text-color: var(--tg-theme-text-color), // +
+    calendar-period-button-text-color: var(--tg-theme-text-color), // +
+    calendar-period-button-icon-color: var(--tg-theme-text-color), // +
+    calendar-header-text-color: var(--tg-theme-text-color), // +
+    calendar-header-divider-color: var(--tg-theme-button-color),
+    calendar-date-today-outline-color: var(--tg-theme-text-color),
     calendar-date-text-color: var(--tg-theme-text-color),
-    calendar-body-label-text-color: var(--tg-theme-text-color)
   ));
 }
 

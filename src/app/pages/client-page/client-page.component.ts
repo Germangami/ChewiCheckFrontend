@@ -11,6 +11,7 @@ import { ClientSelectors } from '../../state/client/client.selectors';
 import { ClientStatisticsComponent } from './client-statistics/client-statistics.component';
 import { IndiviualClientViewComponent } from './indiviual-client-view/indiviual-client-view.component';
 import { GetTrainer } from '../../state/trainer/trainer.actions';
+import { ToolbarComponent } from '../../shared/toolbar/toolbar.component';
 
 @Component({
     selector: 'app-client-page',
@@ -21,7 +22,8 @@ import { GetTrainer } from '../../state/trainer/trainer.actions';
 		CurrentClientViewComponent, 
 		CurrentClientTraningsComponent, 
 		ClientStatisticsComponent,
-		IndiviualClientViewComponent
+		IndiviualClientViewComponent,
+		ToolbarComponent
 	],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

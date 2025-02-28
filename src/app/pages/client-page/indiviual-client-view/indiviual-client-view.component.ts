@@ -35,12 +35,7 @@ export class IndiviualClientViewComponent {
 
   currentCLient: Client;
   formGroup: FormGroup;
-  mockTrainingSessions = [
-    { date: '2023-10-01', time: '10:00', status: 'planned' },
-    { date: '2023-10-03', time: '12:00', status: 'completed' },
-    { date: '2023-10-05', time: '14:00', status: 'missed' },
-  ];
-
+  
   constructor(private fb: FormBuilder) {
     this.formGroup = this.fb.group({
       note: ['']

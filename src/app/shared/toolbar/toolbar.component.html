@@ -1,19 +1,37 @@
 <mat-toolbar>
-  <div class="tolbar">
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+  <!-- Тулбар для тренера -->
+  <div class="tolbar" *ngIf="isCoach">
+    <button mat-icon-button class="example-icon" aria-label="Clients page"
     [routerLink]="['/coach']">
       <mat-icon>people</mat-icon>
     </button>
 
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    <button mat-icon-button class="example-icon" aria-label="Home page"
     [routerLink]="['']">
       <mat-icon>home</mat-icon>
     </button>
 
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+    <button mat-icon-button class="example-icon" aria-label="Schedule page"
+      [routerLink]="['/coach/schedule']">
+      <mat-icon>calendar_today</mat-icon>
+    </button>
+  </div>
+
+  <!-- Тулбар для клиента -->
+  <div class="tolbar" *ngIf="!isCoach">
+    <button mat-icon-button class="example-icon" aria-label="Home page"
+    [routerLink]="['']">
+      <mat-icon>home</mat-icon>
+    </button>
+
+    <button mat-icon-button class="example-icon" aria-label="Client profile page"
       [routerLink]="['/client', currentClientTgId]">
       <mat-icon>person</mat-icon>
     </button>
 
+    <button mat-icon-button class="example-icon" aria-label="Client schedule"
+      [routerLink]="['/client', currentClientTgId]">
+      <mat-icon>fitness_center</mat-icon>
+    </button>
   </div>
 </mat-toolbar>
