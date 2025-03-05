@@ -11,18 +11,21 @@ import {
 import { loadSlim } from "@tsparticles/slim";
 import { NgParticlesService } from "@tsparticles/angular";
 import { NgxParticlesModule } from "@tsparticles/angular";
+import { AuthService } from './shared/services/auth.service';
+import { CommonModule } from '@angular/common';
+import { delay } from 'rxjs';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterOutlet, ToolbarComponent, NgxParticlesModule],
+    imports: [RouterOutlet, ToolbarComponent, NgxParticlesModule, CommonModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
   title = 'ChewiCheck';
   tg: any;
-  tgId: number;
+  tgId: number; // Явно задаем ID тренера
 
   id = "tsparticles";
   particlesUrl = "http://foo.bar/particles.json";
@@ -99,8 +102,9 @@ export class AppComponent implements OnInit {
     detectRetina: true,
   };
 
-  constructor(private store: Store, private readonly ngParticlesService: NgParticlesService) {
-
+  constructor(private store: Store, 
+    private readonly ngParticlesService: NgParticlesService, 
+    public authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -108,6 +112,19 @@ export class AppComponent implements OnInit {
     this.ngParticlesService.init(async (engine: Engine) => {
       await loadSlim(engine);
     });
+    
+    // Принудительно запускаем проверку роли с ID тренера
+    console.log('ЯВНО ВЫЗЫВАЕМ ПРОВЕРКУ РОЛИ С ID ТРЕНЕРА:', this.tgId);
+    this.authService.checkUserRole(this.tgId);
+    
+    // Проверяем роль через 3 секунды после инициализации
+    setTimeout(() => {
+      console.log('ПРОВЕРКА РОЛИ ЧЕРЕЗ 3 СЕКУНДЫ:');
+      console.log('userRole:', this.authService.userRole);
+      console.log('isTrainer:', this.authService.isTrainer());
+      console.log('currentTrainer:', this.authService.currentTrainer);
+      console.log('currentClient:', this.authService.currentClient);
+    }, 3000);
   }
 
   particlesLoaded(container: any): void {
@@ -115,12 +132,15 @@ export class AppComponent implements OnInit {
 
   initTelegramWebApp() {
     if (window.Telegram.WebApp) {
-      console.log(window.Telegram.WebApp, 'CHECK TELEGRAM')
       this.tg = window.Telegram.WebApp;
+      
+      // Не перезаписываем tgId, используем заданный выше
       this.tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id;
+      
+      console.log('Используем тестовый ID тренера:', this.tgId);
       window.Telegram.WebApp.ready();
     } else {
-      return;
+      console.log('Telegram WebApp недоступен, используем тестовый ID');
     }
   }
 }

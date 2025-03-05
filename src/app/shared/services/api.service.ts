@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Client } from '../Model/ClientModel/client-model';
-import { AvailableSlot, Trainer, WorkSchedule } from '../Model/TrainerModel/trainer-model';
+import { AvailableSlot, Trainer, WorkSchedule, BookingStatus } from '../Model/TrainerModel/trainer-model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -29,7 +29,13 @@ export class ApiService {
   }
 
   getCurrentClient(tgId: number | string): Observable<Client> {
-    return this.http.get<Client>(`${this.clientEndpoint}/getCurrentClient/${tgId}`);
+    console.log('ApiService: Запрос клиента с tgId:', tgId);
+    return this.http.get<Client>(`${this.clientEndpoint}/getCurrentClient/${tgId}`).pipe(
+      tap(
+        response => console.log('ApiService: Ответ от getCurrentClient:', response),
+        error => console.error('ApiService: Ошибка getCurrentClient:', error)
+      )
+    );
   }
 
   updateGroupTraining(_id: string): Observable<Client> {
@@ -51,7 +57,13 @@ export class ApiService {
   }
 
   getTrainerById(tgId: number): Observable<Trainer> {
-    return this.http.get<Trainer>(`${this.trainerEndpoint}/getTrainer/${tgId}`);
+    console.log('ApiService: Запрос тренера с tgId:', tgId);
+    return this.http.get<Trainer>(`${this.trainerEndpoint}/getTrainer/${tgId}`).pipe(
+      tap(
+        response => console.log('ApiService: Ответ от getTrainerById:', response),
+        error => console.error('ApiService: Ошибка getTrainerById:', error)
+      )
+    );
   }
 
   getAllTrainers(): Observable<Trainer[]> {
@@ -94,6 +106,22 @@ export class ApiService {
       client,
       date,
       time
+    });
+  }
+
+  updateSessionStatus(
+    trainerId: string,
+    clientTgId: number,
+    date: string,
+    time: string,
+    status: BookingStatus
+  ): Observable<Trainer> {
+    const url = `${this.trainerEndpoint}/session-status/${trainerId}`;
+    return this.http.patch<Trainer>(url, {
+      clientTgId,
+      date,
+      time,
+      status
     });
   }
 }

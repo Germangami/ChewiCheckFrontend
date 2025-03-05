@@ -1,37 +1,51 @@
+<!-- <div class="debug-panel">
+  <h2>Отладочная информация:</h2>
+  <p>Текущая роль: <strong>{{role}}</strong></p>
+  <p>UserRole из сервиса: <strong>{{authService.userRole}}</strong></p>
+  <p>IsTrainer(): <strong>{{authService.isTrainer()}}</strong></p>
+  <p>IsClient(): <strong>{{authService.isClient()}}</strong></p>
+  <p>tgId: <strong>{{tgId}}</strong></p>
+</div>
+
+<h1>PRIVET</h1> -->
+
 <mat-toolbar>
-  <!-- Тулбар для тренера -->
-  <div class="tolbar" *ngIf="isCoach">
-    <button mat-icon-button class="example-icon" aria-label="Clients page"
-    [routerLink]="['/coach']">
-      <mat-icon>people</mat-icon>
-    </button>
+  <div class="toolbar">
+    @if (authService.isTrainer()) {
+      <button mat-icon-button class="example-icon" aria-label="Clients page"
+      [routerLink]="['/coach']">
+        <mat-icon>people</mat-icon>
+      </button>
 
-    <button mat-icon-button class="example-icon" aria-label="Home page"
-    [routerLink]="['']">
-      <mat-icon>home</mat-icon>
-    </button>
+      <button mat-icon-button class="example-icon" aria-label="Home page"
+      [routerLink]="['']">
+        <mat-icon>home</mat-icon>
+      </button>
 
-    <button mat-icon-button class="example-icon" aria-label="Schedule page"
+      <button mat-icon-button class="example-icon" aria-label="Schedule page"
       [routerLink]="['/coach/schedule']">
-      <mat-icon>calendar_today</mat-icon>
-    </button>
-  </div>
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+    } @else if (authService.isClient()) {
+      <button mat-icon-button class="example-icon" aria-label="Client profile page"
+      [routerLink]="['/client', tgId]">
+        <mat-icon>person</mat-icon>
+      </button> 
 
-  <!-- Тулбар для клиента -->
-  <div class="tolbar" *ngIf="!isCoach">
-    <button mat-icon-button class="example-icon" aria-label="Home page"
-    [routerLink]="['']">
-      <mat-icon>home</mat-icon>
-    </button>
+      <button mat-icon-button class="example-icon" aria-label="Home page"
+      [routerLink]="['']">
+        <mat-icon>home</mat-icon>
+      </button>   
 
-    <button mat-icon-button class="example-icon" aria-label="Client profile page"
-      [routerLink]="['/client', currentClientTgId]">
-      <mat-icon>person</mat-icon>
-    </button>
-
-    <button mat-icon-button class="example-icon" aria-label="Client schedule"
-      [routerLink]="['/client', currentClientTgId]">
-      <mat-icon>fitness_center</mat-icon>
-    </button>
+      <button mat-icon-button class="example-icon" aria-label="Schedule page"
+      [routerLink]="['/client', tgId, 'schedule']">
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+    } @else {
+      <button mat-icon-button class="example-icon" aria-label="Home page"
+      [routerLink]="['']">
+        <mat-icon>home</mat-icon>
+      </button>  
+    }
   </div>
 </mat-toolbar>

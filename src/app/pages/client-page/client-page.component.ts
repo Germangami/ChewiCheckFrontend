@@ -11,7 +11,9 @@ import { ClientSelectors } from '../../state/client/client.selectors';
 import { ClientStatisticsComponent } from './client-statistics/client-statistics.component';
 import { IndiviualClientViewComponent } from './indiviual-client-view/indiviual-client-view.component';
 import { GetTrainer } from '../../state/trainer/trainer.actions';
-import { ToolbarComponent } from '../../shared/toolbar/toolbar.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
     selector: 'app-client-page',
@@ -23,7 +25,9 @@ import { ToolbarComponent } from '../../shared/toolbar/toolbar.component';
 		CurrentClientTraningsComponent, 
 		ClientStatisticsComponent,
 		IndiviualClientViewComponent,
-		ToolbarComponent
+		MatToolbarModule,
+		MatIconModule,
+		MatButtonModule
 	],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

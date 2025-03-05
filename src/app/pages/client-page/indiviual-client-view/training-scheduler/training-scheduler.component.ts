@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, model, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -10,13 +10,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { ApiService } from '../../../../shared/services/api.service';
 import { Store } from '@ngxs/store';
-import { BookTimeSlot, GetAvailableSlots } from '../../../../state/trainer/trainer.actions';
+import { BookTimeSlot, GetAvailableSlots, GetTrainer } from '../../../../state/trainer/trainer.actions';
 import { MatButtonModule } from '@angular/material/button';
 import moment from 'moment';
 import { TrainerSelectors } from '../../../../state/trainer/trainer.selectors';
 import { Client } from '../../../../shared/Model/ClientModel/client-model';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Trainer } from '../../../../shared/Model/TrainerModel/trainer-model';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-training-scheduler',
@@ -33,23 +36,29 @@ import { MatIconModule } from '@angular/material/icon';
     MatSelectModule,
     MatButtonModule,
     MatTabsModule,
-    MatIconModule
+    MatIconModule,
+    RouterModule,
+    MatTooltipModule
   ],
   templateUrl: './training-scheduler.component.html',
   styleUrls: ['./training-scheduler.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TrainingSchedulerComponent {
+export class TrainingSchedulerComponent implements OnInit {
   selected = model<Date | null>(null);
   availableSlots$: any;
   freeSlots: any[] = [];
   selectedTime: string = '';
-  @Input() currentClient: Client;
+  @Input() currentClient: Client | null = null;
+  
+  isLoading = false;
+  trainer: Trainer | null = null;
 
   constructor(
     private cdr: ChangeDetectorRef, 
     private store: Store, 
-    private apiService: ApiService
+    private apiService: ApiService,
+    private route: ActivatedRoute
   ) {
     this.selected.subscribe(date => {
       if (date) {
@@ -60,16 +69,52 @@ export class TrainingSchedulerComponent {
     });
   }
 
-  ngOnInit() {
-    this.availableSlots$ = this.store.select(TrainerSelectors.getAvailableSlots);
-    this.availableSlots$.subscribe(slots => {
-      this.freeSlots = slots;
-      this.cdr.markForCheck();
+  ngOnInit(): void {
+    if (!this.currentClient) {
+      this.loadClientData();
+    }
+  }
+
+  private loadClientData(): void {
+    this.isLoading = true;
+    
+    this.route.paramMap.subscribe(params => {
+      const clientId = params.get('id');
+      if (clientId) {
+        console.log('Loading client data for ID:', clientId);
+        
+        this.apiService.getCurrentClient(clientId).subscribe({
+          next: (client) => {
+            console.log('Client data loaded:', client);
+            this.currentClient = client;
+            
+            if (client && client.trainerId) {
+              this.loadTrainerData(client.trainerId);
+            }
+            
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          },
+          error: (error) => {
+            console.error('Failed to load client data:', error);
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
+        });
+      }
     });
   }
 
-  ngOnChanges() {
-    this.cdr.markForCheck();
+  private loadTrainerData(trainerId: number): void {
+    this.store.dispatch(new GetTrainer(trainerId));
+    
+    // Subscribe to trainer data to get available slots
+    this.store.select(TrainerSelectors.getAvailableSlots).subscribe(slots => {
+      if (slots) {
+        this.freeSlots = slots;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   getFormattedDate(): string {
@@ -98,7 +143,6 @@ export class TrainingSchedulerComponent {
     
     const date = moment(this.selected()).format('DD.MM.YYYY');
     
-    // Используем данные текущего клиента вместо мокованных
     const clientData = {
       tgId: this.currentClient.tgId,
       first_name: this.currentClient.first_name,
@@ -107,15 +151,15 @@ export class TrainingSchedulerComponent {
 
     console.log('Booking slot for client:', clientData);
 
-    // Бронируем у тренера
+    // Book with trainer
     this.store.dispatch(new BookTimeSlot(
-        469408413, // TODO: заменить на динамическое получение ID тренера
+        469408413, // TODO: replace with dynamic trainer ID
         clientData,
         date,
         this.selectedTime
     ));
 
-    // Сохраняем у клиента
+    // Save to client
     if (this.currentClient._id) {
         this.apiService.scheduleIndividualTraining(
             this.currentClient._id,
@@ -124,7 +168,6 @@ export class TrainingSchedulerComponent {
         ).subscribe(updatedClient => {
             console.log('Training scheduled for client:', updatedClient);
             
-            // Обновляем данные клиента после успешного бронирования
             if (updatedClient) {
                 this.currentClient = updatedClient;
                 this.selectedTime = '';
@@ -147,12 +190,6 @@ export class TrainingSchedulerComponent {
 
   getSelectedDaySessions() {
     if (!this.selected() || !this.currentClient?.individualTraining?.scheduledSessions) {
-      console.log('No data available:', {
-        selected: this.selected(),
-        currentClient: !!this.currentClient,
-        hasIndividualTraining: !!this.currentClient?.individualTraining,
-        hasScheduledSessions: !!this.currentClient?.individualTraining?.scheduledSessions
-      });
       return [];
     }
     
@@ -161,7 +198,31 @@ export class TrainingSchedulerComponent {
       .filter(session => session.date === selectedDate)
       .sort((a, b) => a.time.localeCompare(b.time));
     
-    this.cdr.markForCheck();
+    console.log('Selected date sessions:', sessions);
     return sessions;
+  }
+
+  markSessionStatus(session: any, status: 'completed' | 'missed') {
+    if (!this.currentClient?._id) {
+      console.error('Cannot update session: client ID is missing');
+      return;
+    }
+
+    this.apiService.updateIndividualTraining(
+      this.currentClient._id,
+      session._id,
+      status
+    ).subscribe({
+      next: (updatedClient) => {
+        console.log('Training session updated:', updatedClient);
+        if (updatedClient) {
+          this.currentClient = updatedClient;
+          this.cdr.markForCheck();
+        }
+      },
+      error: (error) => {
+        console.error('Error updating training session:', error);
+      }
+    });
   }
 }

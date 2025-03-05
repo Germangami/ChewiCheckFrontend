@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, model } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, model } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,14 +8,16 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { Trainer } from '../../../shared/Model/TrainerModel/trainer-model';
+import { Trainer, WeekDay, WorkSchedule, BookedSlot, BookingStatus } from '../../../shared/Model/TrainerModel/trainer-model';
 import { MatIconModule } from '@angular/material/icon';
 import moment from 'moment';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngxs/store';
 import { TrainerSelectors } from '../../../state/trainer/trainer.selectors';
-import { GetTrainer } from '../../../state/trainer/trainer.actions';
+import { GetTrainer, UpdateTrainerSchedule } from '../../../state/trainer/trainer.actions';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ApiService } from '../../../shared/services/api.service';
 
 @Component({
   selector: 'app-schedule-settings',
@@ -36,51 +38,150 @@ import { GetTrainer } from '../../../state/trainer/trainer.actions';
     MatIconModule,
     MatButtonModule,
     MatExpansionModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScheduleSettingsComponent {
+export class ScheduleSettingsComponent implements OnInit {
   @Input() currentTrainer: Trainer | null = null;
-
   selected = model<Date | null>(null);
   
-  constructor(private store: Store, private cdr: ChangeDetectorRef) {
+  weekDays = Object.values(WeekDay);
+  workHoursForm: FormGroup;
+  breakForm: FormGroup;
+  breaks: any[] = [];
+  BookingStatus = BookingStatus;
+
+  constructor(
+    private store: Store,
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private apiService: ApiService
+  ) {
+    this.workHoursForm = this.fb.group({
+      monday: [false],
+      tuesday: [false],
+      wednesday: [false],
+      thursday: [false],
+      friday: [false],
+      saturday: [false],
+      sunday: [false],
+      startTime: ['09:00', Validators.required],
+      endTime: ['18:00', Validators.required]
+    });
+
+    this.breakForm = this.fb.group({
+      weekDay: ['', Validators.required],
+      time: ['', Validators.required],
+      duration: [60, [Validators.required, Validators.min(15), Validators.max(240)]],
+      description: ['']
+    });
   }
 
   ngOnInit() {
-    // Если компонент используется как отдельная страница, загружаем данные тренера
-    if (!this.currentTrainer) {
-      this.loadTrainerData();
-    }
-  }
-  
-  private loadTrainerData() {
-    // ID тренера можно получить из хранилища или из сервиса
-    const trainerId = 469408413; // Заменить на динамическое получение ID
-    
-    // Dispatch action to load trainer data
-    this.store.dispatch(new GetTrainer(trainerId));
-    
-    // Subscribe to trainer data
+    // Load initial trainer data
+    this.store.dispatch(new GetTrainer(469408413)); // TODO: replace with dynamic trainer ID
+
+    // Subscribe to trainer updates from store
     this.store.select(TrainerSelectors.getTrainer).subscribe(trainer => {
+      console.log('Trainer data updated:', trainer);
       if (trainer) {
         this.currentTrainer = trainer;
+        this.loadTrainerSchedule();
         this.cdr.markForCheck();
       }
     });
   }
 
+  private loadTrainerSchedule() {
+    if (!this.currentTrainer?.workSchedule) return;
+
+    const schedule = this.currentTrainer.workSchedule;
+    
+    // Загружаем рабочие дни
+    this.weekDays.forEach(day => {
+      const control = this.workHoursForm.get(day.toLowerCase());
+      if (control) {
+        control.setValue(schedule.workDays.includes(day));
+      }
+    });
+
+    // Загружаем рабочие часы
+    if (schedule.workHours) {
+      this.workHoursForm.patchValue({
+        startTime: schedule.workHours.start,
+        endTime: schedule.workHours.end
+      });
+    }
+
+    // Загружаем перерывы
+    if (schedule.breaks) {
+      this.breaks = [...schedule.breaks];
+    }
+  }
+
+  addBreak() {
+    if (this.breakForm.valid) {
+      const newBreak = this.breakForm.value;
+      this.breaks.push(newBreak);
+      this.breakForm.reset({
+        duration: 60
+      });
+      this.updateSchedule();
+    }
+  }
+
+  removeBreak(breakToRemove: any) {
+    this.breaks = this.breaks.filter(b => 
+      b.weekDay !== breakToRemove.weekDay || 
+      b.time !== breakToRemove.time
+    );
+    this.updateSchedule();
+  }
+
+  private updateSchedule() {
+    if (!this.currentTrainer) return;
+
+    const workDays = this.weekDays.filter(day => 
+      this.workHoursForm.get(day.toLowerCase())?.value
+    );
+
+    const workSchedule: WorkSchedule = {
+      workDays,
+      workHours: {
+        start: this.workHoursForm.get('startTime')?.value,
+        end: this.workHoursForm.get('endTime')?.value
+      },
+      breaks: this.breaks
+    };
+
+    this.store.dispatch(new UpdateTrainerSchedule(
+      this.currentTrainer.tgId,
+      workSchedule
+    ));
+  }
+
   formatDate(date: Date): string {
-    return moment(date).format('DD MMMM YYYY');
+    return moment(date).format('DD.MM.YYYY');
   }
 
   getDaySchedule() {
-    if (!this.selected() || !this.currentTrainer?.bookedSlots) return [];
+    if (!this.selected() || !this.currentTrainer?.bookedSlots) {
+      console.log('No data available:', {
+        selected: this.selected(),
+        trainer: this.currentTrainer,
+        bookedSlots: this.currentTrainer?.bookedSlots
+      });
+      return [];
+    }
     
     const selectedDate = moment(this.selected()).format('DD.MM.YYYY');
-    return this.currentTrainer.bookedSlots
+    
+    const sessions = this.currentTrainer.bookedSlots
       .filter(slot => slot.date === selectedDate)
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+      .sort((a, b) => a.time.localeCompare(b.time));
+    
+    return sessions;
   }
 
   getClientsWithSessions() {
@@ -106,12 +207,45 @@ export class ScheduleSettingsComponent {
       .filter(slot => slot.client.tgId === client.tgId).length;
   }
 
-  getStatusIcon(status: string): string {
-    switch(status) {
-      case 'completed': return 'check_circle';
-      case 'planned': return 'schedule';
-      case 'missed': return 'cancel';
-      default: return 'help';
+  getStatusIcon(status: BookingStatus): string {
+    switch (status) {
+      case BookingStatus.COMPLETED:
+        return 'check_circle';
+      case BookingStatus.MISSED:
+        return 'cancel';
+      case BookingStatus.PLANNED:
+        return 'schedule';
+      default:
+        return 'help';
+    }
+  }
+
+  markSessionStatus(session: BookedSlot, newStatus: BookingStatus) {
+    if (!this.currentTrainer?._id) return;
+
+    this.apiService.updateSessionStatus(
+      this.currentTrainer._id,
+      session.client.tgId,
+      session.date,
+      session.time,
+      newStatus
+    ).subscribe({
+      next: (updatedTrainer) => {
+        if (updatedTrainer) {
+          this.currentTrainer = updatedTrainer;
+          this.cdr.markForCheck();
+        }
+      },
+      error: (error) => {
+        console.error('Error updating session status:', error);
+      }
+    });
+  }
+
+  saveWorkSchedule() {
+    if (this.workHoursForm.valid) {
+      console.log('Saving work schedule:', this.workHoursForm.value);
+      this.updateSchedule();
     }
   }
 } 

@@ -7,25 +7,38 @@ export interface Trainer {
     role: string;
     isActive: boolean;
     workSchedule: WorkSchedule;
-    clients?: string[];  // IDs клиентов
+    clients?: string[];  // Client IDs
     bookedSlots?: BookedSlot[];
 }
 
 export interface WorkSchedule {
     workDays: WeekDay[];
     workHours: {
-        start: string;  // формат "HH:mm"
-        end: string;    // формат "HH:mm"
+        start: string;  // format "HH:mm"
+        end: string;    // format "HH:mm"
     };
+    breaks?: {
+        weekDay: WeekDay;
+        time: string;  // format "HH:mm"
+        duration: number;  // in minutes
+        description?: string;  // example: "Lunch" or "Break"
+    }[];
+    unavailableSlots?: {
+        date: string;  // format "YYYY-MM-DD"
+        time: string;  // format "HH:mm"
+        duration: number;  // in minutes
+        description?: string;
+    }[];
     exceptions?: {
         date: string;
         available: boolean;
+        reason?: string;
     }[];
 }
 
 export interface BookedSlot {
-    date: string;      // формат "YYYY-MM-DD"
-    time: string;      // формат "HH:mm"
+    date: string;      // format "YYYY-MM-DD"
+    time: string;      // format "HH:mm"
     startTime: string;
     client: {
         tgId: number, 
@@ -46,15 +59,15 @@ export enum WeekDay {
 }
 
 export enum BookingStatus {
-    PENDING = 'pending',
-    CONFIRMED = 'confirmed',
-    CANCELLED = 'cancelled',
-    COMPLETED = 'completed'
+    PLANNED = 'planned',
+    COMPLETED = 'completed',
+    MISSED = 'missed'
 }
 
-// Вспомогательный тип для доступных слотов
+// Helper type for available slots
 export interface AvailableSlot {
-    date: string;    // формат "YYYY-MM-DD"
-    time: string;    // формат "HH:mm"
+    date: string;    // format "YYYY-MM-DD"
+    time: string;    // format "HH:mm"
     isAvailable: boolean;
+    unavailableReason?: string;  // "break", "day-off", "booked", etc.
 } 

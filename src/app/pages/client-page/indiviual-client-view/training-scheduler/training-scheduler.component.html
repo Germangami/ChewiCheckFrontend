@@ -1,35 +1,46 @@
-<mat-card class="demo-inline-calendar-card">
-  <mat-calendar [(selected)]="selected"></mat-calendar>
-</mat-card>
+<h1>Страница расписания тренировок</h1>
 
-<h1>{{currentClient?.first_name}} CURRENT CLIENT</h1>
+<div *ngIf="isLoading" class="loading-container">
+  <p>Загрузка данных...</p>
+</div>
 
-<div class="trainings-section">
-  @if (selected()) {
-    <h2 class="date-header">{{getFormattedDate()}}</h2>
+<div *ngIf="!isLoading && currentClient">
+  <mat-card class="demo-inline-calendar-card">
+    <mat-calendar [(selected)]="selected"></mat-calendar>
+  </mat-card>
 
-    <!-- Тренировки на выбранный день -->
-    @if (getSelectedDaySessions().length > 0) {
-      <div class="day-schedule">
-        <p class="section-title">Your Training Sessions</p>
-        @for (session of getSelectedDaySessions(); track session) {
-          <mat-card class="session-card">
-            <mat-card-content>
-              <div class="session-info">
-                <div class="time">
-                  <mat-icon>schedule</mat-icon>
-                  <span>{{session.time}}</span>
-                </div>
-                <div class="status">
-                  <mat-icon>{{getStatusIcon(session.status)}}</mat-icon>
-                  <span>{{session.status}}</span>
-                </div>
+  <div class="trainings-section">
+    <h2 class="date-header" *ngIf="selected()">{{getFormattedDate()}}</h2>
+
+    <div class="day-schedule" *ngIf="selected() && getSelectedDaySessions().length > 0">
+      <p class="section-title">Your Training Sessions</p>
+      <div class="sessions-list">
+        <mat-card class="session-card" *ngFor="let session of getSelectedDaySessions()">
+          <mat-card-content>
+            <div class="session-info">
+              <div class="time">
+                <mat-icon>schedule</mat-icon>
+                <span>{{session.time}}</span>
               </div>
-            </mat-card-content>
-          </mat-card>
-        }
+              <div class="status">
+                <mat-icon>{{getStatusIcon(session.status)}}</mat-icon>
+                <span>{{session.status}}</span>
+              </div>
+              <div class="actions" *ngIf="session.status === 'planned'">
+                <button mat-icon-button color="primary" (click)="markSessionStatus(session, 'completed')" matTooltip="Mark as completed">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="markSessionStatus(session, 'missed')" matTooltip="Mark as missed">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
-    } @else {
+    </div>
+
+    <div *ngIf="selected() && getSelectedDaySessions().length === 0">
       <p class="no-sessions">No training sessions scheduled for this day</p>
       
       <div class="booking-form">
@@ -37,9 +48,12 @@
           <mat-label>Select time</mat-label>
           <mat-select [(ngModel)]="selectedTime">
             <mat-option>None</mat-option>
-            @for (slot of freeSlots; track slot) {
-              <mat-option [value]="slot">{{slot}}</mat-option>
-            }
+            <mat-option *ngFor="let slot of freeSlots" [value]="slot.time" [disabled]="!slot.isAvailable">
+              {{slot.time}} 
+              <span *ngIf="!slot.isAvailable" class="unavailable-reason">
+                ({{slot.unavailableReason === 'break' ? 'Break time' : 'Already booked'}})
+              </span>
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -49,6 +63,11 @@
           Book Session
         </button>
       </div>
-    }
-  }
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!isLoading && !currentClient" class="error-container">
+  <p>Failed to load client data. Please try again later.</p>
+  <button mat-raised-button color="primary" routerLink="/">Return to Home</button>
 </div>

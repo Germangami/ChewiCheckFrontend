@@ -26,9 +26,10 @@
                 </mat-card-content>
             </mat-card>
         </mat-tab>
-        <mat-tab label="Schedule">
-            <app-training-scheduler/>
-        </mat-tab>
+        <!-- <mat-tab label="Schedule">
+            @if(currentCLient) {
+                <app-training-scheduler [currentClient]="currentCLient"/>
+            }
+        </mat-tab> -->
       </mat-tab-group>
-
 }

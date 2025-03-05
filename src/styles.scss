@@ -1,6 +1,11 @@
 @use '@angular/material' as mat;
 
 :root {
+  @include mat.checkbox-overrides((
+    disabled-label-color: orange,
+    label-text-color: var(--tg-theme-text-color),
+    
+  ));
   @include mat.tabs-overrides((
     inactive-label-text-color: var(--tg-theme-text-color),
     active-label-text-color: #2196F3,
@@ -115,7 +120,9 @@ a {
   }
 
   &__footer {
-    position: relative;
+    position: sticky;
+    bottom: 0;
+    z-index: 1000;
   }
 
   &__particles-background {

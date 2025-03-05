@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { filter } from 'rxjs/operators';
+import { filter, interval, Subscription } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { Client } from '../Model/ClientModel/client-model';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -22,48 +23,48 @@ import { Client } from '../Model/ClientModel/client-model';
   styleUrl: './toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ToolbarComponent implements OnInit {
-
-  @Input()
-  config?: any;
+export class ToolbarComponent implements OnInit, OnDestroy {
 
   @Input()
   tgId: number;
 
-  @Input()
-  currentClientTgId: number;
+  role: string = 'Загрузка...';
+  private checkRoleInterval: Subscription;
 
-  currentClient: Client;
-  isCoach: boolean = false;
-
-  constructor(private apiService: ApiService, private router: Router) {
-    // Подписываемся на события навигации
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      this.checkUserRole();
-    });
+  constructor(private router: Router, 
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService) {
   }
 
   ngOnInit() {
-    this.checkUserRole();
-    if(this.tgId) {
-      this.apiService.getCurrentClient(this.tgId).subscribe(client => {
-        this.currentClient = client;
-        this.currentClientTgId = client.tgId;
-      })
+    console.log('ToolbarComponent initialized with tgId:', this.tgId);
+    
+    // Проверяем роль раз в секунду пока не получим результат
+    this.checkRoleInterval = interval(1000).subscribe(() => {
+      console.log('Checking role, current userRole:', this.authService.userRole);
+      // Если роль уже определена
+      if (this.authService.userRole) {
+        this.updateRole();
+        // Прекращаем интервал после получения роли
+        if (this.checkRoleInterval) {
+          this.checkRoleInterval.unsubscribe();
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    // Очищаем подписку при уничтожении компонента
+    if (this.checkRoleInterval) {
+      this.checkRoleInterval.unsubscribe();
     }
   }
-  
-  // Определяем роль пользователя на основе маршрута
-  private checkUserRole() {
-    const currentUrl = this.router.url;
-    this.isCoach = currentUrl.includes('/coach') || currentUrl === '/';
-    
-    // Если мы на странице клиента и не передан tgId, используем из URL
-    if (!this.currentClientTgId && currentUrl.includes('/client/')) {
-      const urlParts = currentUrl.split('/');
-      this.currentClientTgId = parseInt(urlParts[urlParts.length - 1], 10);
-    }
+
+  private updateRole() {
+    console.log('Updating role based on:', this.authService.userRole);
+    this.role = this.authService.isTrainer() ? 'Тренер' : 'Клиент';
+    console.log('Role set to:', this.role);
+    this.cdr.detectChanges();
   }
 }
