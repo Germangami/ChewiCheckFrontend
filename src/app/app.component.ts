@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ToolbarComponent } from "./shared/toolbar/toolbar.component";
-
 import { 
   MoveDirection,
   OutMode,
@@ -13,7 +12,7 @@ import { NgParticlesService } from "@tsparticles/angular";
 import { NgxParticlesModule } from "@tsparticles/angular";
 import { AuthService } from './shared/services/auth.service';
 import { CommonModule } from '@angular/common';
-import { delay } from 'rxjs';
+import { GetTrainer } from './state/trainer/trainer.actions';
 
 @Component({
     selector: 'app-root',
@@ -25,7 +24,7 @@ import { delay } from 'rxjs';
 export class AppComponent implements OnInit {
   title = 'ChewiCheck';
   tg: any;
-  tgId: number; // Явно задаем ID тренера
+  tgId: number;
 
   id = "tsparticles";
   particlesUrl = "http://foo.bar/particles.json";
@@ -102,10 +101,11 @@ export class AppComponent implements OnInit {
     detectRetina: true,
   };
 
-  constructor(private store: Store, 
+  constructor(
+    private store: Store, 
     private readonly ngParticlesService: NgParticlesService, 
-    public authService: AuthService) {
-  }
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.initTelegramWebApp();
@@ -113,34 +113,20 @@ export class AppComponent implements OnInit {
       await loadSlim(engine);
     });
     
-    // Принудительно запускаем проверку роли с ID тренера
-    console.log('ЯВНО ВЫЗЫВАЕМ ПРОВЕРКУ РОЛИ С ID ТРЕНЕРА:', this.tgId);
-    this.authService.checkUserRole(this.tgId);
-    
-    // Проверяем роль через 3 секунды после инициализации
-    setTimeout(() => {
-      console.log('ПРОВЕРКА РОЛИ ЧЕРЕЗ 3 СЕКУНДЫ:');
-      console.log('userRole:', this.authService.userRole);
-      console.log('isTrainer:', this.authService.isTrainer());
-      console.log('currentTrainer:', this.authService.currentTrainer);
-      console.log('currentClient:', this.authService.currentClient);
-    }, 3000);
+    if (this.tgId) {
+      this.store.dispatch(new GetTrainer(this.tgId));
+    }
   }
 
   particlesLoaded(container: any): void {
   }
 
   initTelegramWebApp() {
-    if (window.Telegram.WebApp) {
+    if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
       this.tg = window.Telegram.WebApp;
-      
-      // Не перезаписываем tgId, используем заданный выше
       this.tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id;
-      
-      console.log('Используем тестовый ID тренера:', this.tgId);
       window.Telegram.WebApp.ready();
-    } else {
-      console.log('Telegram WebApp недоступен, используем тестовый ID');
+      window.Telegram.WebApp.expand();
     }
   }
 }

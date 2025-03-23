@@ -59,9 +59,10 @@ export enum WeekDay {
 }
 
 export enum BookingStatus {
-    PLANNED = 'planned',
-    COMPLETED = 'completed',
-    MISSED = 'missed'
+    PENDING = 'pending',       // Ожидает подтверждения тренера
+    APPROVED = 'approved',     // Подтверждено тренером
+    COMPLETED = 'completed',   // Тренировка проведена
+    MISSED = 'missed'         // Клиент не пришел на тренировку
 }
 
 // Helper type for available slots

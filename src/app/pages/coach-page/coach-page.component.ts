@@ -61,7 +61,6 @@ export interface CoachViewModel {
       GroupClientsComponent,
       IndividualClientsComponent,
       ClientFilterComponent,
-      ScheduleSettingsComponent
     ]
 })
 export class CoachPageComponent {

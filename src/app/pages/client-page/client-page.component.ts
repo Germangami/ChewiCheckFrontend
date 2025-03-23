@@ -78,7 +78,7 @@ export class ClientPageComponent implements OnInit, OnDestroy {
 	getRoute() {
 		const tgId = this.activatedRoute.snapshot.paramMap.get('id');
 		if (tgId) {
-				return this.apiService.getCurrentClient(tgId).subscribe({
+				return this.apiService.getCurrentClient(+tgId).subscribe({
 						next: (response) => {
 								this.currentClient = response;
 								this.cdr.detectChanges();

@@ -17,7 +17,6 @@ import {MatTabsModule} from '@angular/material/tabs';
     MatIconModule, 
     ReactiveFormsModule, 
     MatCardModule,
-    TrainingSchedulerComponent,
     MatTabsModule
   ],
   templateUrl: './indiviual-client-view.component.html',

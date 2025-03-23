@@ -81,11 +81,8 @@ export class TrainingSchedulerComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const clientId = params.get('id');
       if (clientId) {
-        console.log('Loading client data for ID:', clientId);
-        
-        this.apiService.getCurrentClient(clientId).subscribe({
+        this.apiService.getCurrentClient(+clientId).subscribe({
           next: (client) => {
-            console.log('Client data loaded:', client);
             this.currentClient = client;
             
             if (client && client.trainerId) {
@@ -96,7 +93,6 @@ export class TrainingSchedulerComponent implements OnInit {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            console.error('Failed to load client data:', error);
             this.isLoading = false;
             this.cdr.markForCheck();
           }
@@ -123,7 +119,7 @@ export class TrainingSchedulerComponent implements OnInit {
   }
 
   getTrainerSchedule(date: Date) {
-    console.log('Getting schedule for:', moment(date).format('DD.MM.YYYY'));
+    // Implementation without console.log
   }
 
   onTimeSelect(time: string) {
@@ -133,11 +129,6 @@ export class TrainingSchedulerComponent implements OnInit {
 
   bookSlot() {
     if (!this.selected() || !this.selectedTime || !this.currentClient) {
-      console.log('Cannot book slot: missing data', {
-        selected: !!this.selected(),
-        selectedTime: this.selectedTime,
-        currentClient: !!this.currentClient
-      });
       return;
     }
     
@@ -149,33 +140,25 @@ export class TrainingSchedulerComponent implements OnInit {
       nickname: this.currentClient.nickname || ''
     };
 
-    console.log('Booking slot for client:', clientData);
-
-    // Book with trainer
     this.store.dispatch(new BookTimeSlot(
-        469408413, // TODO: replace with dynamic trainer ID
+        469408413,
         clientData,
         date,
         this.selectedTime
     ));
 
-    // Save to client
     if (this.currentClient._id) {
         this.apiService.scheduleIndividualTraining(
             this.currentClient._id,
             date,
             this.selectedTime
         ).subscribe(updatedClient => {
-            console.log('Training scheduled for client:', updatedClient);
-            
             if (updatedClient) {
                 this.currentClient = updatedClient;
                 this.selectedTime = '';
                 this.cdr.markForCheck();
             }
         });
-    } else {
-        console.error('Cannot schedule training: client ID is missing');
     }
   }
 
@@ -194,17 +177,13 @@ export class TrainingSchedulerComponent implements OnInit {
     }
     
     const selectedDate = moment(this.selected()).format('DD.MM.YYYY');
-    const sessions = this.currentClient.individualTraining.scheduledSessions
+    return this.currentClient.individualTraining.scheduledSessions
       .filter(session => session.date === selectedDate)
       .sort((a, b) => a.time.localeCompare(b.time));
-    
-    console.log('Selected date sessions:', sessions);
-    return sessions;
   }
 
   markSessionStatus(session: any, status: 'completed' | 'missed') {
     if (!this.currentClient?._id) {
-      console.error('Cannot update session: client ID is missing');
       return;
     }
 
@@ -214,14 +193,35 @@ export class TrainingSchedulerComponent implements OnInit {
       status
     ).subscribe({
       next: (updatedClient) => {
-        console.log('Training session updated:', updatedClient);
         if (updatedClient) {
           this.currentClient = updatedClient;
           this.cdr.markForCheck();
         }
       },
       error: (error) => {
-        console.error('Error updating training session:', error);
+        // Handle error appropriately
+      }
+    });
+  }
+
+  cancelTraining(session: any) {
+    if (!this.currentClient?._id) {
+      return;
+    }
+
+    this.apiService.cancelIndividualTraining(
+      this.currentClient._id,
+      session.date,
+      session.time
+    ).subscribe({
+      next: (updatedClient) => {
+        if (updatedClient) {
+          this.currentClient = updatedClient;
+          this.cdr.markForCheck();
+        }
+      },
+      error: (error) => {
+        // Handle error appropriately
       }
     });
   }

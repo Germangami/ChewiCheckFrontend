@@ -5,15 +5,15 @@
             <div class="grid-training-info mb-1">
                 <span>Start date</span>
                 <span>End date</span>
-                <span class="grid-training-info__label">{{currentCLient.groupTraining.startDate | date:'dd.MM.yyyy'}}</span>
-                <span class="grid-training-info__label">{{currentCLient.groupTraining.endDate | date:'dd.MM.yyyy'}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining?.startDate | date:'dd.MM.yyyy'}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining?.endDate | date:'dd.MM.yyyy'}}</span>
             </div>
 
             <div class="grid-training-info mb-1">
                 <span>Total trainings</span>
                 <span>Remaining trainings</span>
-                <span class="grid-training-info__label">{{currentCLient.groupTraining.totalTrainings}}</span>
-                <span class="grid-training-info__label">{{currentCLient.groupTraining.remainingTrainings}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining?.totalTrainings}}</span>
+                <span class="grid-training-info__label">{{currentCLient.groupTraining?.remainingTrainings}}</span>
             </div>
 
             <div class="button-container">          

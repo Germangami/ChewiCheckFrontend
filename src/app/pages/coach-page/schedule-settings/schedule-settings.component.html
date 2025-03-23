@@ -1,8 +1,21 @@
 <div class="schedule-container">
-  <h1>TRAINER CALENDAR</h1>
   
   <div class="settings-layout">
-    <!-- Calendar on the left -->
+    <!-- Добавляем кнопки для Google Calendar -->
+    <div class="google-calendar-section">
+      @if (!(isAuthenticated$ | async)) {
+        <button mat-fab extended (click)="connectGoogleCalendar()">
+          <mat-icon>calendar_today</mat-icon>
+          Connect Google Calendar
+        </button>
+      } @else {
+        <button mat-fab extended (click)="disconnectGoogleCalendar()">
+          <mat-icon>logout</mat-icon>
+          Disconnect Google Calendar
+        </button>
+      }
+    </div>
+
     <div class="calendar-section">
       <mat-card class="calendar-card">
         <mat-calendar [(selected)]="selected"></mat-calendar>
@@ -10,95 +23,8 @@
     </div>
 
     <div class="right-panel">
-      <!-- Working hours settings -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Working Hours</mat-panel-title>
-        </mat-expansion-panel-header>
-        
-        <form [formGroup]="workHoursForm">
-          <div class="work-days">
-            @for (day of weekDays; track day) {
-              <mat-checkbox [formControlName]="day.toLowerCase()">
-                {{day}}
-              </mat-checkbox>
-            }
-          </div>
-
-          <div class="work-hours">
-            <mat-form-field appearance="outline">
-              <mat-label>Start Time</mat-label>
-              <input matInput type="time" formControlName="startTime">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>End Time</mat-label>
-              <input matInput type="time" formControlName="endTime">
-            </mat-form-field>
-          </div>
-
-          <div class="actions">
-            <button mat-raised-button color="primary" (click)="saveWorkSchedule()">
-              <mat-icon>save</mat-icon>
-              Save Work Schedule
-            </button>
-          </div>
-        </form>
-      </mat-expansion-panel>
-
-      <!-- Break management -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Regular Breaks</mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <div class="breaks-list">
-          @for (break of breaks; track break) {
-            <mat-card class="break-item">
-              <div class="break-info">
-                <span>{{break.weekDay}}</span>
-                <span>{{break.time}} ({{break.duration}} min)</span>
-                <span>{{break.description}}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeBreak(break)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-card>
-          }
-        </div>
-
-        <form [formGroup]="breakForm" (ngSubmit)="addBreak()">
-          <div class="break-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Day of Week</mat-label>
-              <mat-select formControlName="weekDay">
-                @for (day of weekDays; track day) {
-                  <mat-option [value]="day">{{day}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Time</mat-label>
-              <input matInput type="time" formControlName="time">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Duration (min)</mat-label>
-              <input matInput type="number" formControlName="duration">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline"> 
-              <mat-label>Description</mat-label>
-              <input matInput formControlName="description" placeholder="Example: Lunch">
-            </mat-form-field>
-
-            <button mat-raised-button color="primary" type="submit">
-              Add Break
-            </button>
-          </div>
-        </form>
-      </mat-expansion-panel>
+      <!-- Work Schedule Component -->
+      <app-work-schedule [currentTrainer]="currentTrainer"></app-work-schedule>
 
       <!-- Training information -->
       @if (selected()) {
@@ -109,28 +35,45 @@
           
           @if (getDaySchedule().length > 0) {
             @for (session of getDaySchedule(); track session) {
-              <mat-card-content class="session-info">
-                <div class="time">
-                  <mat-icon>schedule</mat-icon>
-                  <span>{{session.startTime}}</span>
+              <div class="session-client-info">
+                <div class="time">{{session.startTime}}</div>
+                <div class="client-name">
+                  {{session.client.first_name}}
+                  <span class="status" [style.color]="getStatusColor(session.status)">
+                    {{session.status}}
+                  </span>
                 </div>
-                <div class="client">
-                  <mat-icon>person</mat-icon>
-                  <span>{{session.client.first_name}} {{session.client.nickname}}</span>
-                </div>
-                <div class="status">
-                  <mat-icon>{{getStatusIcon(session.status)}}</mat-icon>
-                  <span>{{session.status}}</span>
-                </div>
-                <div class="actions" *ngIf="session.status === BookingStatus.PLANNED">
-                  <button mat-icon-button color="primary" (click)="markSessionStatus(session, BookingStatus.COMPLETED)" matTooltip="Mark as completed">
-                    <mat-icon>check_circle</mat-icon>
-                  </button>
-                  <button mat-icon-button color="warn" (click)="markSessionStatus(session, BookingStatus.MISSED)" matTooltip="Mark as missed">
+
+                <div class="actions">
+                  @if (session.status === BookingStatus.PENDING) {
+                    <button mat-fab extended color="primary"
+                            (click)="approveBooking(session)"
+                            matTooltip="Approve training">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                  }
+
+                  @if (session.status === BookingStatus.APPROVED) {
+                    <button mat-fab extended color="accent"
+                            (click)="markSessionCompleted(session)"
+                            matTooltip="Mark as completed">
+                      <mat-icon>done_all</mat-icon>
+                    </button>
+                    
+                    <button mat-icon-button color="warn"
+                            (click)="markSessionMissed(session)"
+                            matTooltip="Mark as missed">
+                      <mat-icon>person_off</mat-icon>
+                    </button>
+                  }
+
+                  <button mat-fab extended color="warn" 
+                          (click)="cancelBooking(session)"
+                          matTooltip="Cancel training">
                     <mat-icon>cancel</mat-icon>
                   </button>
                 </div>
-              </mat-card-content>
+              </div>
             }
           } @else {
             <mat-card-content>

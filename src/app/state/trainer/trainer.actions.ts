@@ -1,4 +1,4 @@
-import { WorkSchedule } from "../../shared/Model/TrainerModel/trainer-model";
+import { WorkSchedule, BookingStatus } from "../../shared/Model/TrainerModel/trainer-model";
 
 export class GetTrainer {
     static readonly type = '[Trainer] Get Trainer';
@@ -7,6 +7,16 @@ export class GetTrainer {
 
 export class UpdateTrainerSchedule {
     static readonly type = '[Trainer] Update Schedule';
+    constructor(public trainerId: number, public workSchedule: WorkSchedule) {}
+}
+
+export class AddBreak {
+    static readonly type = '[Trainer] Add Break';
+    constructor(public trainerId: number, public workSchedule: WorkSchedule) {}
+}
+
+export class RemoveBreak {
+    static readonly type = '[Trainer] Remove Break';
     constructor(public trainerId: number, public workSchedule: WorkSchedule) {}
 }
 
@@ -40,5 +50,16 @@ export class CancelBooking {
         }, 
         public date: string, 
         public time: string
+    ) {}
+}
+
+export class UpdateBookingStatus {
+    static readonly type = '[Trainer] Update Booking Status';
+    constructor(
+        public trainerId: number,
+        public clientTgId: number,
+        public date: string,
+        public time: string,
+        public status: BookingStatus
     ) {}
 } 

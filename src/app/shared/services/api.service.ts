@@ -28,14 +28,8 @@ export class ApiService {
     return this.http.get<Client[]>(`${this.clientEndpoint}/getClients`);
   }
 
-  getCurrentClient(tgId: number | string): Observable<Client> {
-    console.log('ApiService: Запрос клиента с tgId:', tgId);
-    return this.http.get<Client>(`${this.clientEndpoint}/getCurrentClient/${tgId}`).pipe(
-      tap(
-        response => console.log('ApiService: Ответ от getCurrentClient:', response),
-        error => console.error('ApiService: Ошибка getCurrentClient:', error)
-      )
-    );
+  getCurrentClient(tgId: number): Observable<Client> {
+    return this.http.get<Client>(`${this.clientEndpoint}/getCurrentClient/${tgId}`);
   }
 
   updateGroupTraining(_id: string): Observable<Client> {
@@ -57,13 +51,7 @@ export class ApiService {
   }
 
   getTrainerById(tgId: number): Observable<Trainer> {
-    console.log('ApiService: Запрос тренера с tgId:', tgId);
-    return this.http.get<Trainer>(`${this.trainerEndpoint}/getTrainer/${tgId}`).pipe(
-      tap(
-        response => console.log('ApiService: Ответ от getTrainerById:', response),
-        error => console.error('ApiService: Ошибка getTrainerById:', error)
-      )
-    );
+    return this.http.get<Trainer>(`${this.trainerEndpoint}/getTrainer/${tgId}`);
   }
 
   getAllTrainers(): Observable<Trainer[]> {
@@ -100,12 +88,29 @@ export class ApiService {
     return this.http.post<Trainer>(`${this.trainerEndpoint}/book`, requestData);
   }
 
-  cancelBooking(trainerId: number, client: { tgId: number, first_name: string, nickname?: string}, date: string, time: string): Observable<Trainer> {
-    return this.http.post<Trainer>(`${this.trainerEndpoint}/cancel`, {
+  cancelBooking(
+    trainerId: number, 
+    client: { 
+      tgId: number, 
+      first_name: string, 
+      nickname?: string
+    }, 
+    date: string, 
+    time: string
+  ): Observable<{ 
+    message: string;
+    trainer: Trainer;
+    client: Client | null;
+  }> {
+    return this.http.post<{
+      message: string;
+      trainer: Trainer;
+      client: Client | null;
+    }>(`${this.trainerEndpoint}/cancel`, {
       trainerId,
       client,
       date,
-      time
+      startTime: time
     });
   }
 
@@ -123,5 +128,28 @@ export class ApiService {
       time,
       status
     });
+  }
+
+  updateBookingStatus(
+    trainerId: number,
+    clientTgId: number,
+    date: string,
+    time: string,
+    status: string
+  ): Observable<Trainer> {
+    return this.http.patch<Trainer>(`${this.trainerEndpoint}/booking/status`, {
+      trainerId,
+      clientTgId,
+      date,
+      startTime: time,
+      status
+    });
+  }
+
+  cancelIndividualTraining(_id: string, date: string, time: string): Observable<Client> {
+    return this.http.post<Client>(
+      `${this.clientEndpoint}/cancelIndividualTraining`,
+      { _id, date, time }
+    );
   }
 }

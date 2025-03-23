@@ -1,23 +1,110 @@
-<div class="mb-2">
-    <mat-card appearance="outlined">
-        <mat-card-content>
-                <h1>Klub bokserski Chwali Bóg Boxing</h1>
-                <p>
-                    Warszawa, Wola. Ul. Gizów 6
-                </p>
-                <p>
-                    <a href="mailto:chwalibogboxinggmail.com">{{mail}}</a>
-                </p>
-                <p>
-                    +48 533 632 801
-                </p>
-        </mat-card-content>
-    </mat-card>
-</div>
+@for(club of clubs; track club.id) {
+    <div class="mb-2">
+        <mat-card appearance="outlined">
+            <mat-card-content>
+                <div class="club-header">
+                    <h3 class="mb-1">{{club.name}}</h3>
+                </div>
+                <div class="club-info mb-1">
+                    <p>{{club.city}}</p>
+                    <p>{{club.address}}</p>
+                    <p>{{club.phone}}</p>
+                    <p>{{club.email}}</p>
+                </div>
+                <div class="club-description">
+                    <p>{{club.description}}</p>
+                </div>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Grafik Zajęć</mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <mat-accordion class="schedule-accordion">
+                            <mat-expansion-panel expanded="true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>Poniedziałek</mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="schedule-items">
+                                    @for(session of club.schedule.monday; track session) {
+                                        <div class="schedule-item">
+                                            @if (session) {
+                                                <span>{{session}}</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </mat-expansion-panel>
+
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>Wtorek</mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="schedule-items">
+                                    @for(session of club.schedule.tuesday; track session) {
+                                        <div class="schedule-item">
+                                            @if (session) {
+                                                <span>{{session}}</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </mat-expansion-panel>
+
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>Środa</mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="schedule-items">
+                                    @for(session of club.schedule.wednesday; track session) {
+                                        <div class="schedule-item">
+                                            @if (session) {
+                                                <span>{{session}}</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </mat-expansion-panel>
+
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>Czwartek</mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="schedule-items">
+                                    @for(session of club.schedule.thursday; track session) {
+                                        <div class="schedule-item">
+                                            @if (session) {
+                                                <span>{{session}}</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </mat-expansion-panel>
+
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>Piątek</mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="schedule-items">
+                                    @for(session of club.schedule.friday; track session) {
+                                        <div class="schedule-item">
+                                            @if (session) {
+                                                <span>{{session}}</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </mat-card-content>
+        </mat-card>
+    </div>
+}
 
 <mat-card>
     <mat-card-content>
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2443.9714130722027!2d20.942570376735027!3d52.22573717198549!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecb0d884fe4e1%3A0x53bc23387facfec1!2sKlub%20bokserski%20Chwali%20B%C3%B3g%20Boxing!5e0!3m2!1sru!2spl!4v1737287910087!5m2!1sru!2spl" width="100%" height="100%" style="border:0;" allowfullscreen="true" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </mat-card-content>
 </mat-card>
-<!-- <button (click)="goToClientPage()">Go to Client</button> -->

@@ -1,0 +1,9 @@
+{
+  "/api/google-places/*": {
+    "target": "https://maps.googleapis.com/maps/api/place",
+    "secure": true,
+    "pathRewrite": {
+      "^/api/google-places": ""
+    }
+  }
+} 

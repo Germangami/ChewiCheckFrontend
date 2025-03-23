@@ -1,17 +1,6 @@
-<!-- <div class="debug-panel">
-  <h2>Отладочная информация:</h2>
-  <p>Текущая роль: <strong>{{role}}</strong></p>
-  <p>UserRole из сервиса: <strong>{{authService.userRole}}</strong></p>
-  <p>IsTrainer(): <strong>{{authService.isTrainer()}}</strong></p>
-  <p>IsClient(): <strong>{{authService.isClient()}}</strong></p>
-  <p>tgId: <strong>{{tgId}}</strong></p>
-</div>
-
-<h1>PRIVET</h1> -->
-
 <mat-toolbar>
   <div class="toolbar">
-    @if (authService.isTrainer()) {
+    @if (userRole === 'trainer') {
       <button mat-icon-button class="example-icon" aria-label="Clients page"
       [routerLink]="['/coach']">
         <mat-icon>people</mat-icon>
@@ -26,7 +15,7 @@
       [routerLink]="['/coach/schedule']">
         <mat-icon>calendar_today</mat-icon>
       </button>
-    } @else if (authService.isClient()) {
+    } @else if (userRole === 'client') {
       <button mat-icon-button class="example-icon" aria-label="Client profile page"
       [routerLink]="['/client', tgId]">
         <mat-icon>person</mat-icon>
@@ -46,6 +35,11 @@
       [routerLink]="['']">
         <mat-icon>home</mat-icon>
       </button>  
+
+      <button mat-icon-button class="example-icon" aria-label="Schedule page"
+      [routerLink]="['/coach/schedule']">
+        <mat-icon>calendar_today</mat-icon>
+      </button>
     }
   </div>
 </mat-toolbar>

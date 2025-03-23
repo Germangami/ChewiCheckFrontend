@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { State, Action, StateContext } from '@ngxs/store';
+import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Trainer, WorkSchedule, AvailableSlot } from '../../shared/Model/TrainerModel/trainer-model';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '../../shared/services/api.service';
-import { BookTimeSlot, CancelBooking, GetAvailableSlots, GetTrainer, UpdateTrainerSchedule } from './trainer.actions';
+import { BookTimeSlot, CancelBooking, GetAvailableSlots, GetTrainer, UpdateTrainerSchedule, AddBreak, RemoveBreak, UpdateBookingStatus } from './trainer.actions';
 
 export interface TrainerStateModel extends Trainer {
   availableSlots: AvailableSlot[];
@@ -37,6 +37,11 @@ export interface TrainerStateModel extends Trainer {
 @Injectable()
 export class TrainerState {
   constructor(private apiService: ApiService) {}
+
+  @Selector()
+  static isTrainer(state: TrainerStateModel): boolean {
+    return state.role === 'trainer' && state.tgId !== 0;
+  }
 
   @Action(GetTrainer)
   getTrainer(ctx: StateContext<TrainerStateModel>, action: GetTrainer) {
@@ -125,15 +130,80 @@ export class TrainerState {
   @Action(CancelBooking)
   cancelBooking(ctx: StateContext<TrainerStateModel>, action: CancelBooking) {
     return this.apiService.cancelBooking(
-      action.trainerId, 
-      action.client, 
-      action.date, 
+      action.trainerId,
+      action.client,
+      action.date,
       action.time
     ).pipe(
+      tap({
+        next: (response) => {
+          if (response.trainer) {
+            ctx.patchState({
+              ...response.trainer,
+              error: null
+            });
+          }
+        },
+        error: (error) => {
+          ctx.patchState({
+            error: error.message
+          });
+        }
+      })
+    );
+  }
+
+  @Action(AddBreak)
+  addBreak(ctx: StateContext<TrainerStateModel>, action: AddBreak) {
+    return this.apiService.updateTrainerSchedule(action.trainerId, action.workSchedule).pipe(
       tap({
         next: (trainer) => {
           ctx.patchState({
             ...trainer,
+            error: null
+          });
+        },
+        error: (error) => {
+          ctx.patchState({
+            error: error.message
+          });
+        }
+      })
+    );
+  }
+
+  @Action(RemoveBreak)
+  removeBreak(ctx: StateContext<TrainerStateModel>, action: RemoveBreak) {
+    return this.apiService.updateTrainerSchedule(action.trainerId, action.workSchedule).pipe(
+      tap({
+        next: (trainer) => {
+          ctx.patchState({
+            ...trainer,
+            error: null
+          });
+        },
+        error: (error) => {
+          ctx.patchState({
+            error: error.message
+          });
+        }
+      })
+    );
+  }
+
+  @Action(UpdateBookingStatus)
+  updateBookingStatus(ctx: StateContext<TrainerStateModel>, action: UpdateBookingStatus) {
+    return this.apiService.updateBookingStatus(
+      action.trainerId,
+      action.clientTgId,
+      action.date,
+      action.time,
+      action.status
+    ).pipe(
+      tap({
+        next: (updatedTrainer) => {
+          ctx.patchState({
+            ...updatedTrainer,
             error: null
           });
         },
