@@ -10,6 +10,8 @@ import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { TrainerState } from './state/trainer/trainer.state';
+import { TelegramState } from './state/telegram/telegram.state';
+import { AuthState } from './state/auth/auth.state';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -29,10 +31,14 @@ export const appConfig: ApplicationConfig = {
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     provideHttpClient(),
     provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes), provideAnimationsAsync(), provideStore(
+    provideRouter(routes), 
+    provideAnimationsAsync(), 
+    provideStore(
       [
         ClientState,
-        TrainerState
+        TrainerState,
+        TelegramState,
+        AuthState
       ],
       withNgxsReduxDevtoolsPlugin(),
     ), 

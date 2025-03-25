@@ -10,9 +10,10 @@ import {
 import { loadSlim } from "@tsparticles/slim";
 import { NgParticlesService } from "@tsparticles/angular";
 import { NgxParticlesModule } from "@tsparticles/angular";
-import { AuthService } from './shared/services/auth.service';
 import { CommonModule } from '@angular/common';
-import { GetTrainer } from './state/trainer/trainer.actions';
+import { TelegramService } from './shared/services/telegram.service';
+import { Observable } from 'rxjs';
+import { TelegramSelectors } from './state/telegram/telegram.selectors';
 
 @Component({
     selector: 'app-root',
@@ -23,8 +24,8 @@ import { GetTrainer } from './state/trainer/trainer.actions';
 })
 export class AppComponent implements OnInit {
   title = 'ChewiCheck';
-  tg: any;
-  tgId: number;
+  tgId$: Observable<number | null>;
+  isWebAppReady$: Observable<boolean>;
 
   id = "tsparticles";
   particlesUrl = "http://foo.bar/particles.json";
@@ -100,33 +101,21 @@ export class AppComponent implements OnInit {
     },
     detectRetina: true,
   };
-
+  
   constructor(
     private store: Store, 
     private readonly ngParticlesService: NgParticlesService, 
-    public authService: AuthService
-  ) {}
+    private telegramService: TelegramService
+  ) {
+    this.tgId$ = this.store.select(TelegramSelectors.getTgId);
+    this.isWebAppReady$ = this.store.select(TelegramSelectors.isWebAppReady);
+  }
 
   ngOnInit(): void {
-    this.initTelegramWebApp();
+    this.telegramService.initTelegramWebApp();
+    
     this.ngParticlesService.init(async (engine: Engine) => {
       await loadSlim(engine);
     });
-    
-    if (this.tgId) {
-      this.store.dispatch(new GetTrainer(this.tgId));
-    }
-  }
-
-  particlesLoaded(container: any): void {
-  }
-
-  initTelegramWebApp() {
-    if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
-      this.tg = window.Telegram.WebApp;
-      this.tgId = window.Telegram.WebApp?.initDataUnsafe?.user?.id;
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
   }
 }

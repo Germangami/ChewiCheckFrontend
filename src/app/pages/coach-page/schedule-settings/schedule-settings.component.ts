@@ -10,13 +10,10 @@ import moment from 'moment';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngxs/store';
 import { TrainerSelectors } from '../../../state/trainer/trainer.selectors';
-import { GetTrainer, CancelBooking, UpdateBookingStatus } from '../../../state/trainer/trainer.actions';
+import { CancelBooking, UpdateBookingStatus } from '../../../state/trainer/trainer.actions';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../../shared/services/api.service';
 import { WorkScheduleComponent } from './work-schedule/work-schedule.component';
-import { GoogleApiService } from '../../../shared/services/google-api.service';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-schedule-settings',
@@ -40,17 +37,13 @@ export class ScheduleSettingsComponent implements OnInit {
   @Input() currentTrainer: Trainer | null = null;
   selected = model<Date | null>(null);
   BookingStatus = BookingStatus;
-  isAuthenticated$: Observable<boolean> = new Observable<boolean>();
 
   constructor(
     private store: Store,
     private cdr: ChangeDetectorRef,
-    public googleApi: GoogleApiService
   ) {}
 
   ngOnInit() {
-    this.isAuthenticated$ = this.googleApi.isAuthenticated$;
-    this.store.dispatch(new GetTrainer(469408413));
     this.store.select(TrainerSelectors.getTrainer).subscribe(trainer => {
       if (trainer) {
         this.currentTrainer = trainer;
@@ -149,17 +142,5 @@ export class ScheduleSettingsComponent implements OnInit {
       booking.startTime,
       BookingStatus.MISSED
     ));
-  }
-
-  connectGoogleCalendar(): void {
-    this.googleApi.authenticate().pipe(
-      tap({
-        error: (err) => console.error('Google Calendar authentication error:', err)
-      })
-    ).subscribe();
-  }
-
-  disconnectGoogleCalendar(): void {
-    this.googleApi.signOut();
   }
 } 

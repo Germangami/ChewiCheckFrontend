@@ -4,8 +4,24 @@
     </div>
   
     <div class="page__footer">
-      <app-toolbar [tgId]="tgId"></app-toolbar>
+      <app-toolbar [tgId]="tgId$ | async"></app-toolbar>
     </div>
+
+        {{ tgId$ | async }}
+
+    <!-- <div class="test-buttons">
+        <h3>Тест вибрации:</h3>
+        <button (click)="testHaptic('light')">Light Vibration</button>
+        <button (click)="testHaptic('medium')">Medium Vibration</button>
+        <button (click)="testHaptic('heavy')">Heavy Vibration</button>
+
+        <h3>Тест MainButton:</h3>
+        <button (click)="showMainButton()">Показать главную кнопку</button>
+        <button (click)="hideMainButton()">Скрыть главную кнопку</button>
+
+        <h3>Тест Alert:</h3>
+        <button (click)="showAlert()">Показать Alert</button>
+    </div> -->
   
-    <ngx-particles [id]="id" [options]="particlesOptions" (particlesLoaded)="particlesLoaded($event)" class="page__particles-background"></ngx-particles>
+    <ngx-particles [id]="id" [options]="particlesOptions" class="page__particles-background"></ngx-particles>
 </div>

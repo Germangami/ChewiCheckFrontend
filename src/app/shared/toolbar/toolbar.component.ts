@@ -1,14 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../services/api.service';
-import { AuthService, UserRole } from '../services/auth.service';
 import { Store } from '@ngxs/store';
-import { Trainer } from '../Model/TrainerModel/trainer-model';
+import { Observable } from 'rxjs';
+import { CheckUserRole } from '../../state/auth/auth.actions';
+import { AuthSelectors, AuthStateView } from '../../state/auth/auth.selectors';
+import { UserRole } from '../../state/auth/auth.model';
 import { Client } from '../Model/ClientModel/client-model';
+import { Trainer } from '../Model/TrainerModel/trainer-model';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-toolbar',
@@ -18,7 +21,8 @@ import { Client } from '../Model/ClientModel/client-model';
     MatIconModule,
     MatButtonModule,
     RouterModule,
-    CommonModule
+    CommonModule,
+    MatProgressBarModule
   ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',
@@ -26,31 +30,20 @@ import { Client } from '../Model/ClientModel/client-model';
 })
 export class ToolbarComponent implements OnInit {
   @Input() tgId: number | null = null;
-  isTrainer: boolean = false;
-  trainer: Trainer | null = null;
-  client: Client | null = null;
-  userRole: UserRole = UserRole.UNKNOWN;
+  
+  authState$: Observable<AuthStateView>;
+  readonly UserRole = UserRole; // для использования в шаблоне
 
   constructor(
     private router: Router,
-    private apiService: ApiService,
-    private cdr: ChangeDetectorRef,
-    public authService: AuthService,
     private store: Store
-  ) {}
+  ) {
+    this.authState$ = this.store.select(AuthSelectors.getAuthState);
+  }
 
   ngOnInit() {
     if (this.tgId) {
-      this.authService.checkUserRole(this.tgId).subscribe(role => {
-        this.userRole = role;
-        if (role === UserRole.TRAINER) {
-          this.isTrainer = true;
-          this.trainer = this.authService.getCurrentTrainer();
-        } else if (role === UserRole.CLIENT) {
-          this.client = this.authService.getCurrentClient();
-        }
-        this.cdr.markForCheck();
-      });
+      this.store.dispatch(new CheckUserRole(this.tgId));
     }
   }
 }

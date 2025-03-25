@@ -1,20 +1,6 @@
 <div class="schedule-container">
   
   <div class="settings-layout">
-    <!-- Добавляем кнопки для Google Calendar -->
-    <div class="google-calendar-section">
-      @if (!(isAuthenticated$ | async)) {
-        <button mat-fab extended (click)="connectGoogleCalendar()">
-          <mat-icon>calendar_today</mat-icon>
-          Connect Google Calendar
-        </button>
-      } @else {
-        <button mat-fab extended (click)="disconnectGoogleCalendar()">
-          <mat-icon>logout</mat-icon>
-          Disconnect Google Calendar
-        </button>
-      }
-    </div>
 
     <div class="calendar-section">
       <mat-card class="calendar-card">

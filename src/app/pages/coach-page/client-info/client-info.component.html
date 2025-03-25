@@ -100,6 +100,19 @@
           </div>
         </mat-card-content>
       </mat-card>
+
+      <div class="button-container">          
+        <button mat-fab extended (click)="editClientData()">
+          <mat-icon>done_all</mat-icon>
+          Edit
+        </button>
+        <button mat-fab extended 
+                (click)="saveClientData()"
+                [disabled]="!isClientDataEdit">
+          <mat-icon>done_all</mat-icon>
+          Save
+      </button>
+    </div>
     </div>
   }
 </form>
