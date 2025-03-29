@@ -1,59 +1,59 @@
-// .work-schedule-container {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 1rem;
-//   padding: 1rem;
+.work-schedule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
 
-//   .work-days {
-//     display: grid;
-//     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-//     gap: 1rem;
-//     margin-bottom: 1rem;
-//   }
+  .work-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
 
-//   .work-hours {
-//     display: flex;
-//     gap: 1rem;
-//     margin-bottom: 1rem;
+  .work-hours {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
 
-//     mat-form-field {
-//       flex: 1;
-//     }
-//   }
+    mat-form-field {
+      flex: 1;
+    }
+  }
 
-//   .actions {
-//     display: flex;
-//     justify-content: flex-end;
-//   }
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
 
-//   .breaks-list {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 0.5rem;
-//     margin-bottom: 1rem;
+  .breaks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 
-//     .break-item {
-//       display: flex;
-//       justify-content: space-between;
-//       align-items: center;
-//       padding: 0.5rem;
+    .break-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
 
-//       .break-info {
-//         display: flex;
-//         gap: 1rem;
-//         align-items: center;
-//       }
-//     }
-//   }
+      .break-info {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+  }
 
-//   .break-form {
-//     display: grid;
-//     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-//     gap: 1rem;
-//     align-items: start;
+  .break-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: start;
 
-//     button {
-//       margin-top: 1rem;
-//     }
-//   }
-// } 
+    button {
+      margin-top: 1rem;
+    }
+  }
+} 

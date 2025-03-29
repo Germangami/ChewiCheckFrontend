@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ToolbarComponent } from "./shared/toolbar/toolbar.component";
@@ -12,24 +12,20 @@ import { NgParticlesService } from "@tsparticles/angular";
 import { NgxParticlesModule } from "@tsparticles/angular";
 import { CommonModule } from '@angular/common';
 import { TelegramService } from './shared/services/telegram.service';
-import { Observable } from 'rxjs';
+import { combineLatest, filter, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { TelegramSelectors } from './state/telegram/telegram.selectors';
-
+import { MatButtonModule } from '@angular/material/button';
+import { CheckUserRole } from './state/auth/auth.actions';
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterOutlet, ToolbarComponent, NgxParticlesModule, CommonModule],
+    imports: [RouterOutlet, ToolbarComponent, NgxParticlesModule, CommonModule, MatButtonModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
-  title = 'ChewiCheck';
-  tgId$: Observable<number | null>;
-  isWebAppReady$: Observable<boolean>;
-
-  id = "tsparticles";
+export class AppComponent implements OnInit, OnDestroy {
   particlesUrl = "http://foo.bar/particles.json";
-
+  id = "tsparticles";
   particlesOptions = {
     background: {
       color: {
@@ -101,21 +97,40 @@ export class AppComponent implements OnInit {
     },
     detectRetina: true,
   };
+
+  tgId$: Observable<number | null>;
+  isWebAppReady$: Observable<boolean>;
+  title = 'ChewiCheck';
+  subscription: Subscription = new Subscription();
   
   constructor(
     private store: Store, 
     private readonly ngParticlesService: NgParticlesService, 
-    private telegramService: TelegramService
+    private telegramService: TelegramService,
   ) {
+
     this.tgId$ = this.store.select(TelegramSelectors.getTgId);
     this.isWebAppReady$ = this.store.select(TelegramSelectors.isWebAppReady);
   }
 
   ngOnInit(): void {
-    this.telegramService.initTelegramWebApp();
-    
     this.ngParticlesService.init(async (engine: Engine) => {
       await loadSlim(engine);
     });
+    this.telegramService.initTelegramWebApp();
+    this.subscription.add(this.initUserRoleSubscription())
   }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  initUserRoleSubscription() {
+    return this.isWebAppReady$.pipe(
+      filter(result => result === true),
+      switchMap(() => this.tgId$)
+    ).subscribe(tgId => this.store.dispatch(new CheckUserRole(tgId)));
+  }
+
+
 }

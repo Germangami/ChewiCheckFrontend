@@ -1,8 +1,9 @@
 <mat-toolbar>
   <div class="toolbar">
-    @if (authState$ | async; as auth) {
-      @if (auth.role === UserRole.TRAINER) {
-          <button mat-icon-button class="example-icon" aria-label="Clients page"
+    @if(userRole$ | async; as userRole) {
+      
+      @if(userRole === UserRole.TRAINER) {
+        <button mat-icon-button class="example-icon" aria-label="Clients page"
           [routerLink]="['/coach']">
             <mat-icon>people</mat-icon>
           </button>
@@ -16,9 +17,8 @@
           [routerLink]="['/coach/schedule']">
             <mat-icon>calendar_today</mat-icon>
           </button>
-      }
-      @if (auth.role === UserRole.CLIENT) {
-          <button mat-icon-button class="example-icon" aria-label="Client profile page"
+      } @else if(userRole === UserRole.CLIENT) {
+        <button mat-icon-button class="example-icon" aria-label="Client profile page"
         [routerLink]="['/client', tgId]">
           <mat-icon>person</mat-icon>
         </button> 
@@ -32,19 +32,13 @@
         [routerLink]="['/client', tgId, 'schedule']">
           <mat-icon>calendar_today</mat-icon>
         </button>
-      }
-
-      @if (auth.role === UserRole.UNKNOWN) {
+      } @else {
         <button mat-icon-button class="example-icon" aria-label="Home page"
         [routerLink]="['']">
           <mat-icon>home</mat-icon>
         </button>  
-
-        <button mat-icon-button class="example-icon" aria-label="Schedule page"
-        [routerLink]="['/coach/schedule']">
-          <mat-icon>calendar_today</mat-icon>
-        </button>
       }
+
     }
   </div>
 </mat-toolbar>

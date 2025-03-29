@@ -9,12 +9,16 @@ import {
     ResetTelegramState 
 } from './telegram.actions';
 
+// TODO ЗАХАРДКОЖЕННЫЕ ДАННЫЕ tgId, isWebAppReaddy 
+// 469408413
+// 445244007
+
 @State<TelegramStateModel>({
     name: 'telegram',
     defaults: {
-        tgId: null,
+        tgId: 469408413,
         initData: null,
-        isWebAppReady: false,
+        isWebAppReady: true,
         error: null
     }
 })

@@ -12,6 +12,7 @@ import { UserRole } from '../../state/auth/auth.model';
 import { Client } from '../Model/ClientModel/client-model';
 import { Trainer } from '../Model/TrainerModel/trainer-model';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -29,21 +30,22 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToolbarComponent implements OnInit {
-  @Input() tgId: number | null = null;
-  
-  authState$: Observable<AuthStateView>;
-  readonly UserRole = UserRole; // для использования в шаблоне
+
+  @Input()
+  set getTgId(tgId: number) {
+    this.tgId = tgId;
+  }
+
+  userRole$: Observable<UserRole>;
+  UserRole = UserRole;
+  tgId: number;
 
   constructor(
     private router: Router,
-    private store: Store
-  ) {
-    this.authState$ = this.store.select(AuthSelectors.getAuthState);
-  }
+    private store: Store,
+  ) { }
 
   ngOnInit() {
-    if (this.tgId) {
-      this.store.dispatch(new CheckUserRole(this.tgId));
-    }
+    this.userRole$ = this.store.select(AuthSelectors.getRole);
   }
 }
